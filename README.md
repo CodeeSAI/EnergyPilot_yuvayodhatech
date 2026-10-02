@@ -78,7 +78,6 @@ npm run dev
 
 To try the app without installing anything, open the live demo: https://energy-pilot-yuvayodha.vercel.app
 
-To run it locally, use the commands above. The development server starts at http://localhost:5173. To create a production build, run npm run build.
 
 ## Project Structure
 
