@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 300" width="1200" height="300">
+  <defs>
+    <!-- Background glow gradients -->
+    <radialGradient id="coralGlow" cx="100%" cy="0%" r="60%">
+      <stop offset="0%" stop-color="#FF6B5A" stop-opacity="0.22" />
+      <stop offset="100%" stop-color="#FF6B5A" stop-opacity="0" />
+    </radialGradient>
+    <radialGradient id="tealGlow" cx="0%" cy="100%" r="60%">
+      <stop offset="0%" stop-color="#14B8A6" stop-opacity="0.20" />
+      <stop offset="100%" stop-color="#14B8A6" stop-opacity="0" />
+    </radialGradient>
+    <!-- Lightning bolt gradient -->
+    <linearGradient id="boltGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FF6B5A" />
+      <stop offset="100%" stop-color="#14B8A6" />
+    </linearGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1200" height="300" fill="#0B0B0D" />
+  <rect width="1200" height="300" fill="url(#coralGlow)" />
+  <rect width="1200" height="300" fill="url(#tealGlow)" />
+
+  <!-- Lightning Bolt Mark -->
+  <g transform="translate(68, 95)">
+    <path d="M38 0 L8 50 L30 50 L20 95 L58 38 L36 38 Z" fill="url(#boltGrad)" />
+  </g>
+
+  <!-- Title & Subtitle -->
+  <text x="146" y="152" fill="#FFFFFF" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif" font-size="52" font-weight="700" letter-spacing="-0.5">Energy Pilot</text>
+  <text x="148" y="196" fill="#A8A29E" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif" font-size="19" font-weight="400">Real-time energy and air-leak monitoring for MSMEs</text>
+</svg>

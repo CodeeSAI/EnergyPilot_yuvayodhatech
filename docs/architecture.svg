@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 360" width="1200" height="360">
+  <defs>
+    <!-- Arrow marker -->
+    <marker id="arrow" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+      <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#14B8A6" />
+    </marker>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1200" height="360" fill="#0B0B0D" />
+
+  <!-- Box 1: Plant Layer -->
+  <rect x="56" y="96" width="230" height="136" rx="12" ry="12" fill="#141416" stroke="rgba(255, 255, 255, 0.12)" stroke-width="1.5" />
+  <text x="171" y="152" fill="#FFFFFF" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif" font-size="18" font-weight="600" text-anchor="middle">Plant Layer</text>
+  <text x="171" y="184" fill="#A8A29E" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif" font-size="13" font-weight="400" text-anchor="middle">power meters, pressure sensors</text>
+
+  <!-- Arrow 1 -> 2 -->
+  <line x1="292" y1="164" x2="334" y2="164" stroke="#14B8A6" stroke-width="2" marker-end="url(#arrow)" />
+
+  <!-- Box 2: Edge Gateway -->
+  <rect x="342" y="96" width="230" height="136" rx="12" ry="12" fill="#141416" stroke="rgba(255, 255, 255, 0.12)" stroke-width="1.5" />
+  <text x="457" y="152" fill="#FFFFFF" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif" font-size="18" font-weight="600" text-anchor="middle">Edge Gateway</text>
+  <text x="457" y="184" fill="#A8A29E" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif" font-size="13" font-weight="400" text-anchor="middle">local buffering, GSM / Wi-Fi</text>
+
+  <!-- Arrow 2 -> 3 -->
+  <line x1="578" y1="164" x2="620" y2="164" stroke="#14B8A6" stroke-width="2" marker-end="url(#arrow)" />
+
+  <!-- Box 3: Cloud Analytics -->
+  <rect x="628" y="96" width="230" height="136" rx="12" ry="12" fill="#141416" stroke="rgba(255, 255, 255, 0.12)" stroke-width="1.5" />
+  <text x="743" y="152" fill="#FFFFFF" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif" font-size="18" font-weight="600" text-anchor="middle">Cloud Analytics</text>
+  <text x="743" y="184" fill="#A8A29E" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif" font-size="13" font-weight="400" text-anchor="middle">leak detection, Rs and CO2 engine</text>
+
+  <!-- Arrow 3 -> 4 -->
+  <line x1="864" y1="164" x2="906" y2="164" stroke="#14B8A6" stroke-width="2" marker-end="url(#arrow)" />
+
+  <!-- Box 4: Web Dashboard -->
+  <rect x="914" y="96" width="230" height="136" rx="12" ry="12" fill="#141416" stroke="rgba(255, 255, 255, 0.12)" stroke-width="1.5" />
+  <text x="1029" y="152" fill="#FFFFFF" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif" font-size="18" font-weight="600" text-anchor="middle">Web Dashboard</text>
+  <text x="1029" y="184" fill="#A8A29E" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif" font-size="13" font-weight="400" text-anchor="middle">live view, alerts, reports</text>
+
+  <!-- Note underneath -->
+  <text x="600" y="286" fill="#78716C" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif" font-size="13" font-weight="400" text-anchor="middle">This prototype implements the analytics and dashboard layers with a telemetry simulator.</text>
+</svg>
