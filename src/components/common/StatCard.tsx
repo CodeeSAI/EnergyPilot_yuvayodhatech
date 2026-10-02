@@ -7,6 +7,7 @@ interface StatCardProps {
   badgeText: string;
   badgeVariant?: 'running' | 'idle' | 'warning' | 'critical' | 'info';
   badgeIcon?: React.ReactNode;
+  badgeClassName?: string;
   value: number;
   format?: 'currency' | 'integer' | 'decimal';
   unit?: string;
@@ -25,6 +26,7 @@ export const StatCard: React.FC<StatCardProps> = ({
   badgeText,
   badgeVariant = 'running',
   badgeIcon,
+  badgeClassName = '',
   value,
   format = 'integer',
   unit,
@@ -82,15 +84,15 @@ export const StatCard: React.FC<StatCardProps> = ({
       )}
 
       {/* Header Label & Pill */}
-      <div className="flex items-center justify-between relative z-10">
-        <span className="font-grotesk font-semibold text-xs text-stone-400 uppercase tracking-wider">
+      <div className="flex items-center justify-between gap-1.5 relative z-10">
+        <span className="font-grotesk font-semibold text-xs text-stone-400 uppercase tracking-wider truncate">
           {title}
         </span>
         <span
-          className={`px-2.5 py-0.5 rounded-full font-mono text-[11px] font-semibold flex items-center gap-1 ${getBadgeStyle()}`}
+          className={`px-2 py-0.5 rounded-full font-mono text-[10.5px] font-semibold flex items-center gap-1 whitespace-nowrap shrink-0 ${getBadgeStyle()} ${badgeClassName}`}
         >
           {badgeIcon}
-          {badgeText}
+          <span>{badgeText}</span>
         </span>
       </div>
 

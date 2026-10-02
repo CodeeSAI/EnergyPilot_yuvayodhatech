@@ -192,9 +192,9 @@ export const OverviewPage: React.FC = () => {
 
   // Dynamic Trend Badges (Single source of truth computed from data)
   const savingsTarget = state.savings.monthlyTargetInr || 520000;
-  const savingsDiffPercent = +(((state.savings.totalCostSavedInr - savingsTarget) / savingsTarget) * 100).toFixed(1);
-  const savingsBadgeText = `${savingsDiffPercent >= 0 ? '+' : ''}${savingsDiffPercent}%`;
-  const savingsBadgeVariant = savingsDiffPercent >= 0 ? ('running' as const) : ('critical' as const);
+  const savingsPercentOfTarget = +((state.savings.totalCostSavedInr / savingsTarget) * 100).toFixed(1);
+  const savingsBadgeText = `${savingsPercentOfTarget}% of target`;
+  const savingsBadgeVariant = savingsPercentOfTarget >= 90 ? ('running' as const) : ('critical' as const);
 
   // Contracted monthly energy quota cap is 153,000 kWh
   const energyQuotaKwh = 153000;
@@ -301,7 +301,7 @@ export const OverviewPage: React.FC = () => {
           badgeText="CEA Baseline"
           badgeVariant="running"
           badgeIcon={<Leaf className="w-3.5 h-3.5" />}
-          footerLeft="Reduced grid electricity use"
+          footerLeft="Grid electricity saved"
           footerRight={`Grid factor: ${settings.gridEmissionFactorKgPerKwh.toFixed(2)}`}
           footerRightHighlight="teal"
           topBorder="gradient"
@@ -315,7 +315,8 @@ export const OverviewPage: React.FC = () => {
           unit={activeLeakCount > 0 ? 'UNRESOLVED' : 'NOMINAL'}
           badgeText={activeLeakCount > 0 ? 'Alert Trigger' : 'All Clear'}
           badgeVariant={activeLeakCount > 0 ? 'critical' : 'running'}
-          badgeIcon={<AlertTriangle className="w-3.5 h-3.5" />}
+          badgeClassName="whitespace-nowrap px-2 py-0.5"
+          badgeIcon={<AlertTriangle className="w-3.5 h-3.5 shrink-0" />}
           footerLeft={
             activeLeakCount > 0
               ? `Est. ₹${(state.leakAlert?.costPerDayInr || 1420).toLocaleString('en-IN')}/day energy waste`
