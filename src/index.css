@@ -1,0 +1,108 @@
+@import "tailwindcss/base";
+@import "tailwindcss/components";
+@import "tailwindcss/utilities";
+
+:root {
+  --color-coral: #FF6B5A;
+  --color-coral-hover: #FF8070;
+  --color-coral-pressed: #E65A4A;
+  --color-coral-tint: rgba(255, 107, 90, 0.15);
+
+  --color-teal: #14B8A6;
+  --color-teal-hover: #2DD4BF;
+  --color-teal-pressed: #0F9A8B;
+  --color-teal-tint: rgba(20, 184, 166, 0.15);
+
+  --color-bg: #0B0B0D;
+  --color-surface: #141416;
+  --color-surface-elevated: #1B1B1F;
+  --color-border: rgba(255, 255, 255, 0.08);
+
+  --color-text-primary: #F5F5F4;
+  --color-text-secondary: #A8A29E;
+  --color-text-muted: #78716C;
+}
+
+@layer base {
+  html, body {
+    margin: 0;
+    padding: 0;
+    background-color: #0B0B0D;
+    color: #F5F5F4;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  }
+  body {
+    overscroll-behavior: none;
+  }
+  ::-webkit-scrollbar {
+    display: none;
+  }
+  ::selection {
+    background-color: rgba(20, 184, 166, 0.25);
+    color: #2DD4BF;
+  }
+}
+
+.font-tabular {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Premium industrial card styles with depth and top edge highlight */
+.premium-card {
+  position: relative;
+  background: #141416;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-top: 1px solid rgba(255, 255, 255, 0.14);
+  box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.7), 0 0 1px 1px rgba(255, 255, 255, 0.04);
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.premium-card:hover {
+  transform: translateY(-3px);
+  border-color: rgba(20, 184, 166, 0.35);
+  box-shadow: 0 24px 45px -12px rgba(0, 0, 0, 0.85), 0 0 24px rgba(20, 184, 166, 0.14);
+}
+
+.glass-panel {
+  background: #141416;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-top: 1px solid rgba(255, 255, 255, 0.14);
+  box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.7), 0 0 1px 1px rgba(255, 255, 255, 0.04);
+}
+
+.glass-panel-sub {
+  background: #1B1B1F;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-top: 1px solid rgba(255, 255, 255, 0.10);
+}
+
+/* Pulsing coral alert halos */
+@keyframes coralPulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(255, 107, 90, 0.4), 0 12px 32px rgba(0,0,0,0.6); }
+  50% { box-shadow: 0 0 24px 6px rgba(255, 107, 90, 0.25), 0 12px 32px rgba(0,0,0,0.6); }
+}
+
+.alert-halo {
+  animation: coralPulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* Glow filters */
+.glow-teal {
+  filter: drop-shadow(0 0 7px rgba(20, 184, 166, 0.6));
+}
+
+.glow-coral {
+  filter: drop-shadow(0 0 8px rgba(255, 107, 90, 0.65));
+}
+
+/* SVG Stroke draw animation */
+@keyframes drawWaveform {
+  from { stroke-dashoffset: 1400; }
+  to { stroke-dashoffset: 0; }
+}
+
+.animate-draw-line {
+  stroke-dasharray: 1400;
+  stroke-dashoffset: 1400;
+  animation: drawWaveform 1.8s cubic-bezier(0.2, 0.8, 0.2, 1) forwards 0.2s;
+}

@@ -1,0 +1,964 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<meta content="web_dashboard" name="shell-type"/>
+<title>Energy Pilot - Atlas Copco GA-75 (Unit 02)</title>
+<!-- Google Fonts: Space Grotesk, JetBrains Mono, Inter -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=JetBrains+Mono:ital,wght@0,400;0,500;0,600;0,700;1,400&amp;family=Space+Grotesk:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+tailwind.config = {
+  darkMode: "class",
+  theme: {
+    extend: {
+      colors: {
+        background: "#0B0E12",
+        surface: "#0B0E12",
+        "surface-container-lowest": "#07090C",
+        "surface-container-low": "#10141A",
+        "surface-container": "#131920",
+        "surface-container-high": "#19222C",
+        "surface-container-highest": "#212D3A",
+        "surface-bright": "#273647",
+        primary: "#2DD4BF",
+        "primary-container": "#14B8A6",
+        "on-primary": "#003731",
+        secondary: "#F59E0B",
+        "secondary-container": "#D97706",
+        tertiary: "#F43F5E",
+        "tertiary-container": "#E11D48",
+        error: "#F43F5E",
+        "error-container": "#881337",
+        "on-error": "#FFF1F2",
+        "on-surface": "#F1F5F9",
+        "on-surface-variant": "#94A3B8",
+        outline: "#64748B",
+        "outline-variant": "#334155"
+      },
+      fontFamily: {
+        heading: ["'Space Grotesk'", "sans-serif"],
+        mono: ["'JetBrains Mono'", "monospace"],
+        sans: ["'Inter'", "sans-serif"]
+      },
+      boxShadow: {
+        'card-elevated': '0 20px 40px -15px rgba(0,0,0,0.7), 0 0 1px 1px rgba(255,255,255,0.06)',
+        'teal-glow': '0 0 20px rgba(45,212,191,0.22)',
+        'amber-glow': '0 0 20px rgba(245,158,11,0.22)',
+        'coral-glow': '0 0 25px rgba(244,63,94,0.28)'
+      }
+    }
+  }
+}
+</script>
+<style>
+@layer base {
+  html, body {
+    margin: 0;
+    padding: 0;
+    background-color: #0B0E12;
+    color: #F1F5F9;
+    font-family: 'Inter', sans-serif;
+  }
+  ::-webkit-scrollbar { display: none; }
+}
+
+.tabular-nums {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Glossy highlight line on card tops */
+.glass-panel {
+  background: #10141A;
+  border-top: 1px solid rgba(255, 255, 255, 0.16);
+  border-left: 1px solid rgba(255, 255, 255, 0.05);
+  border-right: 1px solid rgba(255, 255, 255, 0.05);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+  box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.7), 0 0 1px 1px rgba(255, 255, 255, 0.05);
+}
+
+.glass-panel-sub {
+  background: #131920;
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
+  border-left: 1px solid rgba(255, 255, 255, 0.04);
+  border-right: 1px solid rgba(255, 255, 255, 0.04);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.02);
+}
+
+/* Pulsing coral alert halos */
+@keyframes coralPulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(244, 63, 94, 0.35), 0 12px 32px rgba(0,0,0,0.6); }
+  50% { box-shadow: 0 0 24px 4px rgba(244, 63, 94, 0.22), 0 12px 32px rgba(0,0,0,0.6); }
+}
+.alert-halo {
+  animation: coralPulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* Waveform path drawing animation */
+.waveform-draw-teal {
+  stroke-dasharray: 1200;
+  stroke-dashoffset: 1200;
+  animation: drawLine 2.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  filter: drop-shadow(0 0 6px rgba(45, 212, 191, 0.65));
+}
+.waveform-draw-amber {
+  stroke-dasharray: 1200;
+  stroke-dashoffset: 1200;
+  animation: drawLine 2.4s cubic-bezier(0.16, 1, 0.3, 1) 0.2s forwards;
+  filter: drop-shadow(0 0 6px rgba(245, 158, 11, 0.65));
+}
+.fill-fade-in {
+  opacity: 0;
+  animation: fadeIn 1.8s ease 1s forwards;
+}
+@keyframes drawLine {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+@keyframes fadeIn {
+  to {
+    opacity: 1;
+  }
+}
+
+/* Card staggered lift */
+.stagger-1 { animation: cardLift 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.05s both; }
+.stagger-2 { animation: cardLift 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.15s both; }
+.stagger-3 { animation: cardLift 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.25s both; }
+.stagger-4 { animation: cardLift 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.35s both; }
+@keyframes cardLift {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Active spring scale feedback */
+.interactive-btn {
+  transition: transform 0.15s cubic-bezier(0.34, 1.56, 0.64, 1), background-color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+}
+.interactive-btn:hover {
+  transform: translateY(-1px) scale(1.015);
+}
+.interactive-btn:active {
+  transform: scale(0.97);
+}
+</style>
+</head>
+<body class="bg-[#0B0E12] text-on-surface antialiased selection:bg-primary-container selection:text-on-primary font-sans">
+<!-- Navigation Sidebar Shell -->
+<aside class="fixed left-0 top-0 h-screen w-60 bg-[#07090C] z-50 flex flex-col justify-between border-r border-white/[0.06] select-none">
+<div class="flex flex-col">
+<!-- Brand Header -->
+<div class="h-14 px-4 flex items-center gap-2.5 border-b border-white/[0.06]">
+<img alt="Energy Pilot Logo" class="h-7 w-7 rounded-lg object-contain shadow-[0_0_12px_rgba(45,212,191,0.25)]" src="https://lh3.googleusercontent.com/aida/AEtjO1VFPwivtVaroMehk_3yLnec0D2o2lHTnCSQp_jH8STEiQO5tumeHtA_3emwv1sdd3jGqmbDImE-iornfI7Jrynql4r20uSovrM-FWarmr6NBuAHafudLdaSk6sFmLV0I4ewyEVyQc_pK5W2aTFXK8wUlaGG4Pb1O0g3UI1J97eaSF2rKnHBhzexruaB1U9oRfGftvhhhBFnj3tFaThFED8oasUFuBS83rLeNxPt9657WPyZ0lA-OfsvaTM"/>
+<div class="flex flex-col min-w-0">
+<span class="font-heading font-bold text-sm tracking-tight text-white uppercase truncate">Energy Pilot</span>
+<span class="font-mono text-[10px] text-outline uppercase tracking-wider">Plant Telemetry v2.4</span>
+</div>
+</div>
+<!-- Facility Status Pill -->
+<div class="p-3">
+<div class="px-2.5 py-1.5 rounded-md bg-[#10141A] border border-white/[0.06] flex items-center justify-between">
+<div class="flex items-center gap-2 truncate">
+<span class="w-1.5 h-1.5 rounded-full bg-primary shadow-[0_0_8px_#2DD4BF] animate-pulse shrink-0"></span>
+<span class="font-mono text-[11px] text-slate-200 truncate font-medium">Chakan Plant #04 • Pune</span>
+</div>
+<span class="font-mono text-[10px] text-outline font-semibold shrink-0 ml-1">IN</span>
+</div>
+</div>
+<!-- Navigation Links -->
+<nav class="flex flex-col gap-1 px-2.5" id="sidebar-nav">
+<a class="nav-item flex items-center gap-2.5 px-3 py-2 text-on-surface-variant hover:bg-[#131920] hover:text-white transition-all rounded-md font-sans text-xs font-medium" data-path="overview" href="#" onclick="alert('Navigating to Plant Fleet Overview'); return false;">
+<span class="material-symbols-outlined text-base leading-none text-slate-400">speed</span>
+<span>Overview</span>
+</a>
+<a aria-current="page" class="nav-item flex items-center gap-2.5 px-3 py-2 font-sans text-xs font-semibold bg-[#19222C] text-primary border-l-2 border-primary rounded-r-md shadow-[0_0_20px_rgba(45,212,191,0.18)]" data-path="machines" href="#">
+<span class="material-symbols-outlined text-base leading-none text-primary" style="font-variation-settings: 'FILL' 1;">precision_manufacturing</span>
+<span>Machines</span>
+</a>
+<a class="nav-item flex items-center gap-2.5 px-3 py-2 text-on-surface-variant hover:bg-[#131920] hover:text-white transition-all rounded-md font-sans text-xs font-medium" data-path="savings" href="#" onclick="alert('Navigating to Energy Savings Module'); return false;">
+<span class="material-symbols-outlined text-base leading-none text-slate-400">energy_savings_leaf</span>
+<span>Savings</span>
+</a>
+<a class="nav-item flex items-center gap-2.5 px-3 py-2 text-on-surface-variant hover:bg-[#131920] hover:text-white transition-all rounded-md font-sans text-xs font-medium" data-path="settings" href="#" onclick="alert('Navigating to Telemetry Settings'); return false;">
+<span class="material-symbols-outlined text-base leading-none text-slate-400">tune</span>
+<span>Settings</span>
+</a>
+</nav>
+</div>
+<!-- Sidebar Live Telemetry Footer Widget -->
+<div class="p-3.5 border-t border-white/[0.06] bg-[#07090C]">
+<div class="flex flex-col gap-1.5">
+<div class="flex items-center justify-between font-mono text-[10px] text-outline uppercase tracking-wider">
+<span>Pneumatic Loop A</span>
+<span class="text-primary font-bold shadow-[0_0_6px_rgba(45,212,191,0.3)]">6.8 BAR</span>
+</div>
+<div class="font-sans text-xs text-slate-200 font-medium truncate">Compressor Ring: Nominal</div>
+<div class="flex items-center gap-1.5 mt-1 pt-1.5 border-t border-white/[0.04]">
+<span class="w-1.5 h-1.5 rounded-full bg-primary shadow-[0_0_6px_#2DD4BF]"></span>
+<span class="font-mono text-[10px] text-slate-400 truncate">Telemetry sync: 12ms jitter</span>
+</div>
+</div>
+</div>
+</aside>
+<!-- Main View Content Area -->
+<div class="pl-60">
+<!-- Top App Bar Header with Frosted Glass -->
+<header class="sticky top-0 z-40 h-14 backdrop-blur-md bg-[#0B0E12]/85 border-b border-white/[0.08] px-6 flex items-center justify-between">
+<!-- Breadcrumb Subpath -->
+<div class="flex items-center gap-3 min-w-0">
+<div class="flex items-center gap-1.5 font-sans text-xs text-outline">
+<span class="text-slate-300 font-medium truncate">Chakan Facility</span>
+<span class="text-outline-variant">/</span>
+<span class="truncate text-slate-400">Sector 3</span>
+</div>
+<span class="h-3.5 w-px bg-white/[0.08]"></span>
+<div class="flex items-center gap-1.5 px-2 py-0.5 rounded bg-[#10141A] border border-white/[0.06]">
+<span class="font-mono text-[10px] text-secondary font-semibold uppercase">Shift B</span>
+<span class="text-outline text-xs">•</span>
+<span class="font-mono text-[10px] text-slate-300 truncate font-medium">Unit 2 Pneumatics</span>
+</div>
+</div>
+<!-- Live Telemetry Status Banner -->
+<div class="hidden xl:flex items-center gap-2 px-3 py-1 rounded-full bg-[#10141A]/90 border border-teal-500/20 shadow-[0_0_12px_rgba(45,212,191,0.1)]">
+<span class="relative flex h-2 w-2">
+<span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
+<span class="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
+</span>
+<span class="font-mono text-[10px] text-primary tracking-wider uppercase font-semibold">Live Telemetry • Latency 240ms • 50.04 Hz Grid</span>
+</div>
+<!-- Header Quick Actions & Profile -->
+<div class="flex items-center gap-3 shrink-0">
+<button class="interactive-btn hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-[#131920] hover:bg-[#19222C] border border-white/[0.08] text-slate-200 font-mono text-[11px] font-medium shadow-sm" onclick="handleExportCSV()">
+<span class="material-symbols-outlined text-sm leading-none text-outline">download</span>
+<span>Export Telemetry</span>
+</button>
+<button class="relative p-1.5 rounded-md hover:bg-[#131920] text-slate-400 hover:text-white transition-colors" onclick="alert('Notification Center: 1 Unacknowledged Critical Sev-1 Alert on Unit 02');" title="Notifications">
+<span class="material-symbols-outlined text-xl leading-none">notifications</span>
+<span class="absolute top-1 right-1 w-2 h-2 rounded-full bg-tertiary shadow-[0_0_6px_#F43F5E]"></span>
+</button>
+<div class="flex items-center gap-2.5 pl-2 border-l border-white/[0.08]">
+<img alt="Lead Auditor Portrait" class="w-8 h-8 rounded-full object-cover ring-1 ring-primary/40 shadow-sm" src="https://lh3.googleusercontent.com/aida/AEtjO1Xdx8gJmcaL1ZtKpx8kuQ2MlV7NWJZg6HCrE87crvmvC5Y-c3witUKfGY9foIOJispjp0N6mSHZP5C70aNdK32RoSlwjrLJYHyEUq3Ff6Ivdzv3nzYJjiOOzioGj6imllp194rLH41WGWBmI81ZmaNnaq-ZmUfLU-eaFt6I_duXd6rHnmE_kXz5r8_D0xUWLjfLUD6PwTmntZl4wUyB6JS9EUnqIzD0tfkSjUgO--RL7yNwQVHIIcc54hI"/>
+<div class="hidden md:flex flex-col text-left">
+<span class="font-sans text-xs font-semibold leading-none text-slate-100">R. Kulkarni</span>
+<span class="font-mono text-[9px] text-outline uppercase tracking-wider mt-0.5 font-medium">Lead Auditor</span>
+</div>
+</div>
+</div>
+</header>
+<!-- Main Viewport Content -->
+<main class="relative w-full px-6 py-6 bg-[#0B0E12] min-h-[calc(100vh-3.5rem)]">
+<div class="flex flex-col w-full gap-6 select-none max-w-[1600px] mx-auto">
+<!-- Top Breadcrumb & Return Action Bar -->
+<div class="stagger-1 flex flex-wrap items-center justify-between gap-3">
+<div class="flex items-center gap-2 min-w-0">
+<a class="interactive-btn group inline-flex items-center gap-1.5 font-mono text-xs text-outline hover:text-primary transition-colors py-1 px-2 rounded hover:bg-[#131920]" href="#" onclick="alert('Navigating to Fleet Overview'); return false;">
+<span class="material-symbols-outlined text-sm transition-transform group-hover:-translate-x-1">arrow_back</span>
+<span class="font-medium">Back to Fleet Overview</span>
+</a>
+<span class="text-white/20">/</span>
+<nav class="flex items-center gap-1.5 font-mono text-[11px] uppercase tracking-widest text-outline">
+<span class="hover:text-slate-200 cursor-pointer transition-colors" onclick="alert('Machines catalog');">Machines</span>
+<span class="text-white/20">/</span>
+<span class="hover:text-slate-200 cursor-pointer transition-colors" onclick="alert('Compressed air fleet');">Compressed Air</span>
+<span class="text-white/20">/</span>
+<span class="text-primary font-semibold tracking-wider">Atlas Copco GA-75 (Unit 02)</span>
+</nav>
+</div>
+<div class="flex items-center gap-2 font-mono text-[11px] text-outline bg-[#10141A] px-3 py-1 rounded-md border border-white/[0.06] shadow-sm">
+<span class="w-2 h-2 rounded-full bg-tertiary animate-ping"></span>
+<span class="text-tertiary font-bold tracking-tight">ALERT STATE: ELEVATED FLANGE BYPASS</span>
+<span class="text-white/20">|</span>
+<span class="tabular-nums font-medium text-slate-300">SYNC 13:49:02 IST</span>
+</div>
+</div>
+<!-- Machine Header Hero Panel -->
+<div class="stagger-2 glass-panel relative rounded-xl p-6 flex flex-col gap-4 overflow-hidden border-t border-white/[0.16] shadow-card-elevated">
+<div class="absolute -right-20 -top-20 w-80 h-80 rounded-full bg-tertiary/10 blur-3xl pointer-events-none"></div>
+<div class="absolute -left-12 -bottom-12 w-64 h-64 rounded-full bg-primary/5 blur-3xl pointer-events-none"></div>
+<div class="flex flex-col lg:flex-row lg:items-start justify-between gap-5 relative z-10">
+<div class="flex flex-col gap-1.5 min-w-0">
+<div class="flex items-center gap-2.5 flex-wrap">
+<span class="px-2 py-0.5 rounded bg-[#19222C] border border-white/[0.06] font-mono text-[10px] text-slate-300 font-semibold tracking-wider">UNIT 02 // SECTOR-03</span>
+<span class="font-mono text-[11px] text-outline uppercase tracking-wider font-medium">Induction Rotor Drive</span>
+<span class="inline-flex items-center gap-1 font-mono text-[11px] text-tertiary font-semibold">
+<span class="material-symbols-outlined text-xs">warning</span> Stage 1 Air-End Pressure Instability
+              </span>
+</div>
+<h1 class="font-heading text-2xl lg:text-3xl text-white tracking-tight font-semibold truncate pt-1">
+              Main Rotary Screw Compressor #02 <span class="text-slate-400 font-normal text-xl lg:text-2xl font-heading">(Atlas Copco GA-75 VSD)</span>
+</h1>
+<!-- Industrial Metadata Badges -->
+<div class="flex flex-wrap items-center gap-x-4 gap-y-1 mt-1 pt-1 text-outline font-mono text-xs">
+<div class="flex items-center gap-1.5">
+<span class="text-outline">Asset ID:</span>
+<span class="text-slate-200 font-semibold">EP-CMP-0204</span>
+</div>
+<span class="text-white/20">•</span>
+<div class="flex items-center gap-1.5">
+<span class="text-outline">Rating:</span>
+<span class="text-slate-200 font-medium">75 kW / 100 HP</span>
+</div>
+<span class="text-white/20">•</span>
+<div class="flex items-center gap-1.5">
+<span class="text-outline">Installation:</span>
+<span class="text-slate-200 font-medium">Bay 1 Central Manifold</span>
+</div>
+<span class="text-white/20">•</span>
+<div class="flex items-center gap-1.5">
+<span class="text-outline">Firmware:</span>
+<span class="text-slate-300 font-mono font-medium">v4.18.2-rt</span>
+</div>
+</div>
+</div>
+<!-- Quick Action Operations Bar with spring press -->
+<div class="flex flex-wrap items-center gap-2.5 shrink-0 pt-1 lg:pt-0">
+<button class="interactive-btn flex items-center gap-2 px-3.5 py-2 rounded-lg bg-[#131920] hover:bg-[#19222C] text-slate-200 font-sans text-xs font-semibold shadow-sm hover:shadow-teal-glow border border-white/[0.08]" onclick="handleDiagnosticsMode()">
+<span class="material-symbols-outlined text-base text-primary">troubleshoot</span>
+<span>Diagnostics Mode</span>
+</button>
+<button class="interactive-btn flex items-center gap-2 px-3.5 py-2 rounded-lg bg-[#131920] hover:bg-[#19222C] text-slate-200 font-sans text-xs font-semibold shadow-sm hover:shadow-teal-glow border border-white/[0.08]" onclick="handleExportCSV()">
+<span class="material-symbols-outlined text-base text-outline">receipt_long</span>
+<span>Export Telemetry (CSV)</span>
+</button>
+<button class="interactive-btn flex items-center gap-2 px-4 py-2 rounded-lg bg-tertiary-container hover:bg-tertiary text-white font-sans text-xs font-bold shadow-coral-glow border border-white/[0.12]" id="ack-btn" onclick="handleAcknowledgeAlert()">
+<span class="material-symbols-outlined text-base" style="font-variation-settings: 'FILL' 1;">notifications_paused</span>
+<span id="ack-text">Acknowledge Alert</span>
+</button>
+</div>
+</div>
+<!-- Severity Banner Pill with coral glow -->
+<div class="alert-halo mt-1 flex items-center justify-between p-3 rounded-lg backdrop-blur-md bg-[#161d24]/90 border border-tertiary/40 text-tertiary" id="severity-banner">
+<div class="flex items-center gap-2.5 min-w-0">
+<span class="material-symbols-outlined text-tertiary text-lg animate-pulse shrink-0">report_problem</span>
+<span class="font-mono text-xs tracking-wider font-bold uppercase truncate">
+              CRITICAL PNEUMATIC LEAK DETECTED (DISCHARGE VALVE A) — ESTIMATED VOLUMETRIC DEGRADATION -21.4%
+            </span>
+</div>
+<span class="font-mono text-[10px] font-bold text-tertiary uppercase tracking-widest shrink-0 ml-3 bg-tertiary/20 px-2 py-0.5 rounded border border-tertiary/30">
+            SEV-1 FACILITY FLAG
+          </span>
+</div>
+</div>
+<!-- Primary Dashboard Grid: 65% Telemetry / 35% Diagnostics -->
+<div class="grid grid-cols-1 xl:grid-cols-12 gap-6 items-start">
+<!-- LEFT COLUMN (8 Cols) -->
+<div class="xl:col-span-8 flex flex-col gap-6">
+<!-- Real-Time Dual Axis Engineering Chart -->
+<div class="stagger-3 glass-panel rounded-xl p-5 flex flex-col gap-4 border-t border-white/[0.16] shadow-card-elevated hover:border-teal-500/30 transition-all duration-300">
+<div class="flex flex-wrap items-center justify-between gap-3">
+<div class="flex flex-col">
+<span class="font-mono text-[10px] text-outline uppercase tracking-wider font-semibold">Synchronous Waveform Analysis</span>
+<h2 class="font-heading text-lg lg:text-xl text-white font-semibold tracking-tight">Real-Time Telemetry: Power &amp; Pressure (12H Window)</h2>
+</div>
+<!-- Legend Group -->
+<div class="flex items-center gap-3.5 font-mono text-[11px]">
+<div class="flex items-center gap-1.5 bg-[#131920] px-2 py-1 rounded border border-white/[0.04]">
+<span class="w-3 h-1 bg-primary rounded-full shadow-[0_0_6px_#2DD4BF]"></span>
+<span class="text-slate-200 font-medium">Active Power (kW)</span>
+</div>
+<div class="flex items-center gap-1.5 bg-[#131920] px-2 py-1 rounded border border-white/[0.04]">
+<span class="w-3 h-1 bg-secondary rounded-full border-b border-dashed border-secondary shadow-[0_0_6px_#F59E0B]"></span>
+<span class="text-secondary font-medium">Discharge Pressure (bar)</span>
+</div>
+<div class="flex items-center gap-1.5 bg-[#131920] px-2 py-1 rounded border border-white/[0.04]">
+<span class="w-3 h-0.5 bg-outline-variant"></span>
+<span class="text-outline">Baseline Mode (62.0 kW)</span>
+</div>
+</div>
+</div>
+<!-- Telemetry Graph Surface with interactive hover readout -->
+<div class="relative w-full h-80 bg-[#07090C] rounded-lg p-2 overflow-hidden flex flex-col justify-between border border-white/[0.04] group cursor-crosshair" id="chart-container">
+<!-- Canvas Top Grid Readouts -->
+<div class="flex items-center justify-between px-3 py-1 font-mono text-[11px] text-outline/80 z-20 pointer-events-none">
+<div class="flex items-center gap-4">
+<span>Y1: ACTIVE_KW (40-80 kW)</span>
+<span class="text-primary font-bold tabular-nums">PEAK: 74.2 kW</span>
+</div>
+<div class="flex items-center gap-4">
+<span class="text-secondary font-bold tabular-nums">CURR_PRES: 6.38 BAR</span>
+<span>Y2: PRESSURE (5.5-7.5 BAR)</span>
+</div>
+</div>
+<!-- Dual Axis SVG Graph -->
+<div class="absolute inset-0 px-6 pt-8 pb-7 flex items-center">
+<svg class="w-full h-full overflow-visible" id="telemetry-svg" preserveaspectratio="none" viewbox="0 0 800 240">
+<defs>
+<!-- Teal Area Gradient -->
+<lineargradient id="powerFill" x1="0" x2="0" y1="0" y2="1">
+<stop offset="0%" stop-color="#2DD4BF" stop-opacity="0.35"></stop>
+<stop offset="60%" stop-color="#2DD4BF" stop-opacity="0.08"></stop>
+<stop offset="100%" stop-color="#2DD4BF" stop-opacity="0"></stop>
+</lineargradient>
+<!-- Pressure Area Gradient -->
+<lineargradient id="amberFill" x1="0" x2="0" y1="0" y2="1">
+<stop offset="0%" stop-color="#F59E0B" stop-opacity="0.18"></stop>
+<stop offset="100%" stop-color="#F59E0B" stop-opacity="0"></stop>
+</lineargradient>
+</defs>
+<!-- Subtle Engineering Grid Lines -->
+<line stroke="#19222C" stroke-dasharray="3 3" stroke-width="0.8" x1="0" x2="800" y1="30" y2="30"></line>
+<line stroke="#19222C" stroke-dasharray="3 3" stroke-width="0.8" x1="0" x2="800" y1="90" y2="90"></line>
+<line stroke="#19222C" stroke-dasharray="3 3" stroke-width="0.8" x1="0" x2="800" y1="150" y2="150"></line>
+<line stroke="#19222C" stroke-dasharray="3 3" stroke-width="0.8" x1="0" x2="800" y1="210" y2="210"></line>
+<line stroke="#19222C" stroke-opacity="0.6" stroke-width="0.6" x1="160" x2="160" y1="0" y2="240"></line>
+<line stroke="#19222C" stroke-opacity="0.6" stroke-width="0.6" x1="320" x2="320" y1="0" y2="240"></line>
+<line stroke="#19222C" stroke-opacity="0.6" stroke-width="0.6" x1="480" x2="480" y1="0" y2="240"></line>
+<line stroke="#19222C" stroke-opacity="0.6" stroke-width="0.6" x1="640" x2="640" y1="0" y2="240"></line>
+<!-- Baseline Model kW (Straight reference dotted) -->
+<line opacity="0.65" stroke="#64748B" stroke-dasharray="4 6" stroke-width="1.2" x1="0" x2="800" y1="120" y2="120"></line>
+<!-- Active Power kW Fill -->
+<polygon class="fill-fade-in" fill="url(#powerFill)" points="
+                    0,130 40,126 80,128 120,124 160,122 200,125 240,118 280,120 320,115 360,118 400,114 440,112 480,110 
+                    520,70 540,64 560,68 600,62 640,66 680,60 720,64 760,58 800,62 
+                    800,240 0,240
+                  "></polygon>
+<!-- Active Power Waveform Line with bloom -->
+<polyline class="waveform-draw-teal" fill="none" points="
+                    0,130 40,126 80,128 120,124 160,122 200,125 240,118 280,120 320,115 360,118 400,114 440,112 480,110 
+                    520,70 540,64 560,68 600,62 640,66 680,60 720,64 760,58 800,62
+                  " stroke="#2DD4BF" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"></polyline>
+<!-- Discharge Pressure Line with bloom -->
+<polyline class="waveform-draw-amber" fill="none" points="
+                    0,65 40,64 80,66 120,63 160,65 200,64 240,66 280,63 320,64 360,62 400,64 440,63 480,65 
+                    510,66 525,145 540,152 560,148 600,154 640,150 680,156 720,152 760,158 800,155
+                  " stroke="#F59E0B" stroke-dasharray="4 3" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></polyline>
+<!-- Anomaly Event Flag Vertical Ray -->
+<line opacity="0.9" stroke="#F43F5E" stroke-dasharray="3 3" stroke-width="1.8" x1="525" x2="525" y1="12" y2="235"></line>
+<!-- Coral Beacon Pin on Leak drop -->
+<circle class="animate-ping" cx="525" cy="145" fill="#F43F5E" opacity="0.8" r="9"></circle>
+<circle cx="525" cy="145" fill="#F43F5E" r="4.5" stroke="#FFFFFF" stroke-width="1.5"></circle>
+<!-- Power Spike Pin -->
+<circle class="animate-ping" cx="525" cy="70" fill="#2DD4BF" opacity="0.75" r="7"></circle>
+<circle cx="525" cy="70" fill="#2DD4BF" r="4" stroke="#FFFFFF" stroke-width="1.2"></circle>
+<!-- Dynamic interactive crosshair line -->
+<line id="interactive-crosshair" opacity="0" stroke="#FFFFFF" stroke-dasharray="2 2" stroke-width="1" x1="0" x2="0" y1="0" y2="240"></line>
+<circle cx="0" cy="0" fill="#2DD4BF" id="crosshair-dot-power" opacity="0" r="4" stroke="#FFFFFF" stroke-width="1.5"></circle>
+<circle cx="0" cy="0" fill="#F59E0B" id="crosshair-dot-pres" opacity="0" r="4" stroke="#FFFFFF" stroke-width="1.5"></circle>
+</svg>
+<!-- Chart Static Leak Onset Callout Box -->
+<div class="absolute left-[64%] top-4 -translate-x-1/2 bg-[#131920]/95 px-3 py-1.5 rounded-lg shadow-coral-glow flex flex-col gap-0.5 pointer-events-none border border-tertiary/40 backdrop-blur-md z-20">
+<div class="flex items-center gap-1.5 font-mono text-[11px] text-tertiary font-bold">
+<span class="w-1.5 h-1.5 rounded-full bg-tertiary animate-pulse"></span>
+<span>Leak Onset: -0.42 bar drop</span>
+</div>
+<div class="font-mono text-[10px] text-slate-400">
+                    13:42 IST • Flange bypass triggered
+                  </div>
+</div>
+<!-- Hover Inspection Live Tooltip (Hidden by default, shown on mousemove) -->
+<div class="absolute pointer-events-none opacity-0 transition-opacity duration-150 z-30 bg-[#131920]/95 backdrop-blur-md px-3 py-2 rounded-lg border border-teal-500/30 shadow-card-elevated font-mono text-xs flex flex-col gap-1" id="chart-tooltip">
+<div class="text-[10px] text-outline uppercase font-semibold" id="tooltip-time">13:42 IST</div>
+<div class="flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-primary"></span>
+<span class="text-slate-300">Power:</span>
+<span class="text-primary font-bold tabular-nums" id="tooltip-power">71.8 kW</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-secondary"></span>
+<span class="text-slate-300">Pressure:</span>
+<span class="text-secondary font-bold tabular-nums" id="tooltip-pres">6.38 bar</span>
+</div>
+</div>
+</div>
+<!-- Bottom Time-Scale Axis -->
+<div class="flex items-center justify-between px-4 py-1.5 border-t border-white/[0.06] font-mono text-[11px] text-outline z-20">
+<span>02:00 IST</span>
+<span>04:00</span>
+<span>06:00 (Auto Purge)</span>
+<span>08:00</span>
+<span>10:00 (Shift B)</span>
+<span>12:00</span>
+<span class="text-tertiary font-bold tracking-tight">13:42 (Onset)</span>
+<span class="text-slate-200 font-semibold">14:00 (Live)</span>
+</div>
+</div>
+<!-- Telemetry Summary Metric Strip with Tabular Figures & Animated Counters -->
+<div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+<!-- Present Power -->
+<div class="glass-panel-sub rounded-lg p-3.5 flex flex-col gap-1 relative overflow-hidden">
+<div class="absolute -right-4 -top-4 w-16 h-16 rounded-full bg-primary/10 blur-xl pointer-events-none"></div>
+<span class="font-mono text-[10px] text-outline uppercase tracking-wider font-semibold relative z-10">Present Power</span>
+<div class="flex items-baseline gap-1 relative z-10">
+<span class="font-mono text-2xl text-white font-bold tabular-nums tracking-tight" id="counter-power">71.8</span>
+<span class="font-mono text-xs text-outline font-medium">kW</span>
+</div>
+<span class="font-mono text-[11px] text-secondary flex items-center gap-0.5 font-medium relative z-10">
+<span class="material-symbols-outlined text-sm">trending_up</span> +15.8% vs Target
+                </span>
+</div>
+<!-- Discharge Pressure -->
+<div class="glass-panel-sub rounded-lg p-3.5 flex flex-col gap-1 relative overflow-hidden">
+<div class="absolute -right-4 -top-4 w-16 h-16 rounded-full bg-tertiary/15 blur-xl pointer-events-none"></div>
+<span class="font-mono text-[10px] text-outline uppercase tracking-wider font-semibold relative z-10">Discharge Pressure</span>
+<div class="flex items-baseline gap-1 relative z-10">
+<span class="font-mono text-2xl text-tertiary font-bold tabular-nums tracking-tight" id="counter-pres">6.38</span>
+<span class="font-mono text-xs text-outline font-medium">bar</span>
+</div>
+<span class="font-mono text-[11px] text-tertiary flex items-center gap-0.5 font-medium relative z-10">
+<span class="material-symbols-outlined text-sm">trending_down</span> -0.62 bar Delta
+                </span>
+</div>
+<!-- Line Delivery Flow -->
+<div class="glass-panel-sub rounded-lg p-3.5 flex flex-col gap-1 relative overflow-hidden">
+<div class="absolute -right-4 -top-4 w-16 h-16 rounded-full bg-primary/5 blur-xl pointer-events-none"></div>
+<span class="font-mono text-[10px] text-outline uppercase tracking-wider font-semibold relative z-10">Line Delivery Flow</span>
+<div class="flex items-baseline gap-1 relative z-10">
+<span class="font-mono text-2xl text-white font-bold tabular-nums tracking-tight" id="counter-flow">382</span>
+<span class="font-mono text-xs text-outline font-medium">CFM</span>
+</div>
+<span class="font-mono text-[11px] text-outline relative z-10">Rated: 420 CFM</span>
+</div>
+<!-- Cycle Frequency -->
+<div class="glass-panel-sub rounded-lg p-3.5 flex flex-col gap-1 relative overflow-hidden">
+<div class="absolute -right-4 -top-4 w-16 h-16 rounded-full bg-secondary/10 blur-xl pointer-events-none"></div>
+<span class="font-mono text-[10px] text-outline uppercase tracking-wider font-semibold relative z-10">Cycle Frequency</span>
+<div class="flex items-baseline gap-1 relative z-10">
+<span class="font-mono text-2xl text-white font-bold tabular-nums tracking-tight" id="counter-cycles">18.4</span>
+<span class="font-mono text-xs text-outline font-medium">cph</span>
+</div>
+<span class="font-mono text-[11px] text-secondary relative z-10 font-medium">Excess cycling (+6)</span>
+</div>
+</div>
+</div>
+<!-- Telemetry Chronology Log Table with Filter Options -->
+<div class="stagger-4 glass-panel rounded-xl p-5 flex flex-col gap-3 border-t border-white/[0.16] shadow-card-elevated">
+<div class="flex flex-wrap items-center justify-between pb-2 border-b border-white/[0.06] gap-2">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-outline text-lg">history</span>
+<h2 class="font-heading text-lg lg:text-xl text-white font-semibold tracking-tight">Telemetry Chronology (Last 48 Hours)</h2>
+</div>
+<!-- Filter Interactive Dropdown -->
+<div class="flex items-center gap-2 font-mono text-[11px]">
+<span class="w-1.5 h-1.5 rounded-full bg-primary animate-pulse"></span>
+<span class="text-outline uppercase">Filter:</span>
+<select class="bg-[#131920] border border-white/[0.08] text-slate-200 text-xs font-mono rounded px-2.5 py-1 focus:ring-1 focus:ring-primary focus:outline-none cursor-pointer" id="severity-filter" onchange="filterLogTable(this.value)">
+<option value="ALL">ALL SYSTEM LOGS</option>
+<option value="CRITICAL">CRITICAL ONLY</option>
+<option value="WARNING">WARNING ONLY</option>
+<option value="RESOLVED">RESOLVED</option>
+<option value="INFO">INFO / SYSTEM</option>
+</select>
+</div>
+</div>
+<!-- Table with Inter Body Fonts & JetBrains Mono figures -->
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-[#07090C]/80 text-outline font-mono text-[10px] uppercase tracking-wider">
+<th class="py-2.5 px-3 font-semibold">Timestamp</th>
+<th class="py-2.5 px-3 font-semibold">Channel / Subsystem</th>
+<th class="py-2.5 px-3 font-semibold">Observation Payload</th>
+<th class="py-2.5 px-3 font-semibold text-center">Severity</th>
+<th class="py-2.5 px-3 font-semibold text-right">Variance Metric</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-white/[0.04] font-mono text-xs" id="log-tbody">
+<!-- Row 1: Vibration Spike -->
+<tr class="log-row hover:bg-white/[0.03] transition-colors duration-150 cursor-pointer" data-sev="INFO">
+<td class="py-3 px-3 text-outline whitespace-nowrap tabular-nums">14:10 IST</td>
+<td class="py-3 px-3 text-slate-200 whitespace-nowrap font-medium">DE_BEARING_VIB</td>
+<td class="py-3 px-3 text-slate-300 font-sans text-xs">Vibration spike: 3.4 mm/s on drive-end bearing (Within warning threshold)</td>
+<td class="py-3 px-3 text-center">
+<span class="inline-block px-2 py-0.5 rounded-full bg-[#19222C] text-slate-300 text-[10px] font-semibold">INFO</span>
+</td>
+<td class="py-3 px-3 text-right text-outline tabular-nums font-mono">+0.6 mm/s</td>
+</tr>
+<!-- Row 2: Leak Alert (CRITICAL) -->
+<tr class="log-row bg-tertiary-container/10 hover:bg-tertiary-container/20 transition-colors duration-150 cursor-pointer" data-sev="CRITICAL">
+<td class="py-3 px-3 text-tertiary whitespace-nowrap font-bold tabular-nums">13:42 IST</td>
+<td class="py-3 px-3 text-tertiary whitespace-nowrap font-bold">PNEUMATIC_MANIFOLD</td>
+<td class="py-3 px-3 text-slate-100 font-sans text-xs font-medium">Unscheduled pressure drop detected at 6.38 bar; unloader cycle duration +28%</td>
+<td class="py-3 px-3 text-center">
+<span class="inline-block px-2.5 py-0.5 rounded-full bg-tertiary-container text-white text-[10px] font-bold shadow-coral-glow">CRITICAL</span>
+</td>
+<td class="py-3 px-3 text-right text-tertiary tabular-nums font-mono font-bold">-0.42 bar</td>
+</tr>
+<!-- Row 3: Shift Transition -->
+<tr class="log-row hover:bg-white/[0.03] transition-colors duration-150 cursor-pointer" data-sev="INFO">
+<td class="py-3 px-3 text-outline whitespace-nowrap tabular-nums">10:15 IST</td>
+<td class="py-3 px-3 text-slate-200 whitespace-nowrap font-medium">GRID_MODULATION</td>
+<td class="py-3 px-3 text-slate-300 font-sans text-xs">Shift A to Shift B load transition: 62.4 kW steady state reached</td>
+<td class="py-3 px-3 text-center">
+<span class="inline-block px-2 py-0.5 rounded-full bg-[#19222C] text-outline text-[10px] font-semibold">SYSTEM</span>
+</td>
+<td class="py-3 px-3 text-right text-slate-300 tabular-nums font-mono">0.00 %</td>
+</tr>
+<!-- Row 4: Scheduled Purge -->
+<tr class="log-row hover:bg-white/[0.03] transition-colors duration-150 cursor-pointer" data-sev="RESOLVED">
+<td class="py-3 px-3 text-outline whitespace-nowrap tabular-nums">06:00 IST</td>
+<td class="py-3 px-3 text-slate-200 whitespace-nowrap font-medium">CONDENSATE_VALVE_01</td>
+<td class="py-3 px-3 text-slate-300 font-sans text-xs">Scheduled daily auto-purge completed successfully (Purge valve 01 cycle)</td>
+<td class="py-3 px-3 text-center">
+<span class="inline-block px-2 py-0.5 rounded-full bg-primary/20 text-primary text-[10px] font-bold shadow-[0_0_8px_rgba(45,212,191,0.2)]">RESOLVED</span>
+</td>
+<td class="py-3 px-3 text-right text-primary tabular-nums font-mono font-semibold">100% OK</td>
+</tr>
+<!-- Row 5: Idle Run-on Warning -->
+<tr class="log-row hover:bg-white/[0.03] transition-colors duration-150 cursor-pointer" data-sev="WARNING">
+<td class="py-3 px-3 text-outline whitespace-nowrap">Yesterday</td>
+<td class="py-3 px-3 text-slate-200 whitespace-nowrap font-medium">DUTY_UNLOADER</td>
+<td class="py-3 px-3 text-slate-300 font-sans text-xs">Idle run-on detected: Compressor ran unloaded for 42 mins with zero pneumatic demand</td>
+<td class="py-3 px-3 text-center">
+<span class="inline-block px-2 py-0.5 rounded-full bg-secondary/20 text-secondary text-[10px] font-bold">WARNING</span>
+</td>
+<td class="py-3 px-3 text-right text-secondary tabular-nums font-mono font-bold">+42 MINS</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="flex items-center justify-between pt-2 font-mono text-[11px] text-outline">
+<span id="log-count">Showing 5 of 128 registered facility telemetry events</span>
+<button class="hover:text-primary transition-colors uppercase tracking-wider flex items-center gap-1 font-semibold" onclick="alert('Querying facility data lake: fetching parquet archives...');">
+<span>Query Historical Data Lake</span>
+<span class="material-symbols-outlined text-xs">arrow_forward</span>
+</button>
+</div>
+</div>
+</div>
+<!-- RIGHT COLUMN (4 Cols): Diagnostics & Benchmark Panel -->
+<div class="xl:col-span-4 flex flex-col gap-6">
+<!-- Critical Leak Diagnostic Card with Frosted Backdrop & Coral Halo -->
+<div class="stagger-3 relative backdrop-blur-md bg-[#131922]/85 rounded-xl p-5 flex flex-col gap-4 overflow-hidden border-t border-white/[0.16] border-x border-b border-white/[0.08] shadow-card-elevated alert-halo" id="diagnostic-card">
+<div class="absolute left-0 top-0 bottom-0 w-1.5 bg-tertiary"></div>
+<div class="absolute top-0 right-0 p-4 opacity-5 pointer-events-none">
+<span class="material-symbols-outlined text-9xl text-tertiary">air</span>
+</div>
+<div class="flex items-center justify-between border-b border-white/[0.06] pb-2.5">
+<div class="flex items-center gap-2">
+<span class="w-2.5 h-2.5 rounded-full bg-tertiary animate-pulse shadow-[0_0_8px_#F43F5E]"></span>
+<h3 class="font-heading text-sm text-tertiary uppercase tracking-wider font-bold">Active Leak Diagnostic</h3>
+</div>
+<span class="font-mono text-[10px] px-2 py-0.5 bg-tertiary/20 text-tertiary font-bold rounded border border-tertiary/30">CONFIDENCE: 98.4%</span>
+</div>
+<!-- Leak Core Specs -->
+<div class="flex flex-col gap-1">
+<span class="font-mono text-[10px] text-outline uppercase tracking-wider font-semibold">Identified Position</span>
+<div class="font-heading text-sm font-semibold text-white flex items-center gap-1.5">
+<span class="material-symbols-outlined text-tertiary text-base">pin_drop</span>
+<span>Discharge Manifold Flange Seal (Line B)</span>
+</div>
+<p class="font-sans text-xs text-slate-300 mt-1 leading-relaxed">
+                Acoustic sensor AC-04 detected ultrasonic hiss @ 38.4 kHz during duty cycle shift at 13:42 IST.
+              </p>
+</div>
+<!-- Waste Metrics Quantifier with JetBrains Mono numbers -->
+<div class="grid grid-cols-2 gap-3 bg-[#0B0E12]/80 rounded-lg p-3 border border-white/[0.04]">
+<div class="flex flex-col">
+<span class="font-mono text-[10px] text-outline uppercase font-semibold">Wasted Flow</span>
+<span class="font-mono text-xl text-tertiary font-bold tabular-nums">16.8 <span class="text-xs text-outline font-normal">CFM</span></span>
+<span class="font-mono text-[10px] text-slate-400 mt-0.5">Line loss bypass</span>
+</div>
+<div class="flex flex-col">
+<span class="font-mono text-[10px] text-outline uppercase font-semibold">Parasitic Power</span>
+<span class="font-mono text-xl text-tertiary font-bold tabular-nums">4.8 <span class="text-xs text-outline font-normal">kW</span></span>
+<span class="font-mono text-[10px] text-slate-400 mt-0.5">Unloaded bleed</span>
+</div>
+</div>
+<!-- Financial Impact Box with Ambient Radial Glow -->
+<div class="relative bg-[#10141A] rounded-lg p-3.5 flex flex-col gap-1 border-l-2 border-secondary overflow-hidden shadow-inner">
+<div class="absolute -right-6 -bottom-6 w-32 h-32 rounded-full bg-secondary/15 blur-2xl pointer-events-none"></div>
+<div class="flex items-center justify-between relative z-10">
+<span class="font-mono text-[10px] text-secondary uppercase tracking-wider font-bold">Financial Hemorrhage</span>
+<span class="font-mono text-[10px] text-outline">Tariff: ₹8.40 / kWh</span>
+</div>
+<div class="flex items-baseline gap-2 relative z-10">
+<span class="font-mono text-2xl text-white font-bold tabular-nums tracking-tight" id="counter-cost">₹1,240</span>
+<span class="font-sans text-xs text-slate-400">/ 24-hr shift</span>
+</div>
+<span class="font-mono text-xs text-secondary font-semibold relative z-10">
+                Projected: ₹37,200 / month cumulative penalty
+              </span>
+</div>
+<!-- Recommendation Protocol in clean Inter typography -->
+<div class="flex flex-col gap-1.5 pt-1">
+<span class="font-mono text-[10px] text-outline uppercase tracking-wider font-semibold">Prescribed Field Protocol</span>
+<div class="bg-[#19222C]/70 p-3 rounded-lg font-sans text-xs text-slate-200 flex items-start gap-2 border border-white/[0.04] leading-relaxed">
+<span class="material-symbols-outlined text-primary text-lg shrink-0 mt-0.5">build_circle</span>
+<span>Replace Teflon gasket on 50mm coupling during 18:00 shift changeover. Torque bolts to 48 Nm.</span>
+</div>
+</div>
+<!-- Action Button Dispatch with spring animation -->
+<button class="interactive-btn w-full mt-1 py-2.5 px-4 rounded-lg bg-primary hover:bg-primary-container text-on-primary font-sans text-xs font-bold flex items-center justify-center gap-2 shadow-teal-glow border border-primary/40" id="dispatch-btn" onclick="handleWorkOrder()">
+<span class="material-symbols-outlined text-base">assignment_add</span>
+<span id="dispatch-text">Mark for Maintenance Work Order</span>
+</button>
+</div>
+<!-- Baseline vs Current Benchmark Card -->
+<div class="stagger-4 glass-panel rounded-xl p-5 flex flex-col gap-4 border-t border-white/[0.16] shadow-card-elevated">
+<div class="flex items-center justify-between border-b border-white/[0.06] pb-2.5">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-outline text-base">balance</span>
+<h3 class="font-heading text-sm text-slate-200 uppercase tracking-wider font-bold">Baseline vs Benchmark</h3>
+</div>
+<span class="font-mono text-[10px] text-primary font-semibold tracking-wider">ISO 1217 ANNEX C</span>
+</div>
+<!-- Specific Power Consumption (SPC) Progress -->
+<div class="relative flex flex-col gap-2 p-1 rounded overflow-hidden">
+<div class="absolute -right-2 top-0 w-24 h-24 rounded-full bg-tertiary/10 blur-xl pointer-events-none"></div>
+<div class="flex items-center justify-between relative z-10">
+<span class="font-mono text-[10px] text-outline uppercase font-semibold">Specific Power (SPC)</span>
+<div class="flex items-baseline gap-1">
+<span class="font-mono text-sm text-tertiary font-bold tabular-nums" id="counter-spc">0.142</span>
+<span class="font-mono text-[10px] text-outline">kWh/Nm³</span>
+</div>
+</div>
+<!-- Bar comparison track -->
+<div class="w-full bg-[#07090C] h-2.5 rounded-full overflow-hidden flex relative z-10 p-0.5 border border-white/[0.06]">
+<!-- Target segment -->
+<div class="bg-primary h-full rounded-l-full shadow-[0_0_8px_rgba(45,212,191,0.6)]" style="width: 60%"></div>
+<!-- Excess degradation segment -->
+<div class="bg-tertiary h-full rounded-r-full shadow-[0_0_8px_rgba(244,63,94,0.6)]" style="width: 25%"></div>
+</div>
+<div class="flex items-center justify-between font-mono text-[11px] text-outline relative z-10">
+<span>Target Baseline: 0.108 kWh/Nm³</span>
+<span class="text-tertiary font-bold">+31.4% degradation</span>
+</div>
+</div>
+<!-- 3 Essential Physical Indicators -->
+<div class="flex flex-col gap-1 divide-y divide-white/[0.04]">
+<!-- Motor Loading Factor -->
+<div class="flex items-center justify-between py-2.5">
+<div class="flex flex-col">
+<span class="font-sans text-xs text-slate-200 font-medium">Motor Loading Factor</span>
+<span class="font-mono text-[10px] text-outline">Nominal window: 70 - 85%</span>
+</div>
+<div class="flex flex-col items-end">
+<span class="font-mono text-sm text-white font-bold tabular-nums" id="counter-loading">84.2%</span>
+<span class="font-mono text-[10px] text-primary font-semibold">Nominal Load</span>
+</div>
+</div>
+<!-- Power Factor (cos phi) -->
+<div class="flex items-center justify-between py-2.5">
+<div class="flex flex-col">
+<span class="font-sans text-xs text-slate-200 font-medium">Power Factor (cos φ)</span>
+<span class="font-mono text-[10px] text-outline">Capacitor bank healthy</span>
+</div>
+<div class="flex flex-col items-end">
+<span class="font-mono text-sm text-white font-bold tabular-nums" id="counter-pf">0.93</span>
+<span class="font-mono text-[10px] text-primary font-semibold">Lagging (Safe)</span>
+</div>
+</div>
+<!-- Discharge Temp -->
+<div class="flex items-center justify-between py-2.5">
+<div class="flex flex-col">
+<span class="font-sans text-xs text-slate-200 font-medium">Discharge Element Temp</span>
+<span class="font-mono text-[10px] text-outline">Safety Trip limit: 95.0 °C</span>
+</div>
+<div class="flex flex-col items-end">
+<span class="font-mono text-sm text-secondary font-bold tabular-nums" id="counter-temp">88.4 °C</span>
+<span class="font-mono text-[10px] text-secondary font-medium">+6.6 °C Headroom</span>
+</div>
+</div>
+</div>
+<!-- Certified Bus Pill -->
+<div class="bg-[#131920] rounded-lg p-3 flex items-center gap-2.5 border border-white/[0.04]">
+<span class="material-symbols-outlined text-primary text-xl">verified</span>
+<div class="flex flex-col min-w-0">
+<span class="font-mono text-xs text-slate-200 font-medium truncate">Audit Certified via Chakan Ring Bus</span>
+<span class="font-mono text-[10px] text-outline truncate">Next scheduled calibration: 14 Nov 2025</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+</div>
+<!-- Interactive Logic Scripts -->
+<script>
+// Number count-up animation on load
+function animateValue(id, start, end, duration, decimals, prefix = '', suffix = '') {
+  const obj = document.getElementById(id);
+  if (!obj) return;
+  let startTimestamp = null;
+  const step = (timestamp) => {
+    if (!startTimestamp) startTimestamp = timestamp;
+    const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+    const easeProgress = 1 - Math.pow(1 - progress, 3);
+    const current = (start + (end - start) * easeProgress).toFixed(decimals);
+    obj.innerHTML = prefix + current + suffix;
+    if (progress < 1) {
+      window.requestAnimationFrame(step);
+    }
+  };
+  window.requestAnimationFrame(step);
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  // Trigger counters
+  animateValue('counter-power', 50.0, 71.8, 1400, 1);
+  animateValue('counter-pres', 7.2, 6.38, 1500, 2);
+  animateValue('counter-flow', 250, 382, 1300, 0);
+  animateValue('counter-cycles', 10.0, 18.4, 1200, 1);
+  animateValue('counter-cost', 800, 1240, 1600, 0, '₹');
+  animateValue('counter-spc', 0.100, 0.142, 1400, 3);
+  animateValue('counter-loading', 70.0, 84.2, 1200, 1, '', '%');
+  animateValue('counter-pf', 0.85, 0.93, 1100, 2);
+  animateValue('counter-temp', 75.0, 88.4, 1300, 1, '', ' °C');
+
+  // Chart Interactive Crosshair & Tooltip
+  setupChartHover();
+});
+
+// Real-Time Crosshair Telemetry Inspector
+function setupChartHover() {
+  const container = document.getElementById('chart-container');
+  const crosshair = document.getElementById('interactive-crosshair');
+  const dotPower = document.getElementById('crosshair-dot-power');
+  const dotPres = document.getElementById('crosshair-dot-pres');
+  const tooltip = document.getElementById('chart-tooltip');
+  const tooltipTime = document.getElementById('tooltip-time');
+  const tooltipPower = document.getElementById('tooltip-power');
+  const tooltipPres = document.getElementById('tooltip-pres');
+
+  // Interpolated telemetry points along graph
+  const telemetrySamples = [
+    { x: 0, time: "02:00 IST", kw: "61.2 kW", bar: "7.02 bar", yPower: 130, yPres: 65 },
+    { x: 100, time: "03:30 IST", kw: "62.4 kW", bar: "6.98 bar", yPower: 126, yPres: 64 },
+    { x: 200, time: "05:00 IST", kw: "62.0 kW", bar: "7.01 bar", yPower: 125, yPres: 64 },
+    { x: 300, time: "07:30 IST", kw: "63.5 kW", bar: "6.95 bar", yPower: 118, yPres: 63 },
+    { x: 400, time: "10:00 IST", kw: "64.8 kW", bar: "6.92 bar", yPower: 114, yPres: 64 },
+    { x: 480, time: "12:00 IST", kw: "66.0 kW", bar: "6.88 bar", yPower: 110, yPres: 65 },
+    { x: 525, time: "13:42 IST (Leak Onset)", kw: "71.8 kW", bar: "6.38 bar", yPower: 70, yPres: 145 },
+    { x: 600, time: "13:48 IST", kw: "72.4 kW", bar: "6.34 bar", yPower: 62, yPres: 154 },
+    { x: 700, time: "13:54 IST", kw: "73.8 kW", bar: "6.36 bar", yPower: 64, yPres: 152 },
+    { x: 800, time: "14:00 IST (Live)", kw: "71.8 kW", bar: "6.38 bar", yPower: 62, yPres: 155 }
+  ];
+
+  container.addEventListener('mousemove', (e) => {
+    const rect = container.getBoundingClientRect();
+    const mouseX = e.clientX - rect.left;
+    const clampedX = Math.max(24, Math.min(rect.width - 24, mouseX));
+    const svgX = (clampedX / rect.width) * 800;
+
+    // Find nearest point
+    let nearest = telemetrySamples[0];
+    let minDist = 9999;
+    for (const pt of telemetrySamples) {
+      const d = Math.abs(pt.x - svgX);
+      if (d < minDist) {
+        minDist = d;
+        nearest = pt;
+      }
+    }
+
+    // Position crosshairs in SVG
+    crosshair.setAttribute('x1', nearest.x);
+    crosshair.setAttribute('x2', nearest.x);
+    crosshair.setAttribute('opacity', '0.7');
+
+    dotPower.setAttribute('cx', nearest.x);
+    dotPower.setAttribute('cy', nearest.yPower);
+    dotPower.setAttribute('opacity', '1');
+
+    dotPres.setAttribute('cx', nearest.x);
+    dotPres.setAttribute('cy', nearest.yPres);
+    dotPres.setAttribute('opacity', '1');
+
+    // Position Tooltip
+    tooltipTime.innerText = nearest.time;
+    tooltipPower.innerText = nearest.kw;
+    tooltipPres.innerText = nearest.bar;
+
+    const tooltipLeft = Math.min(rect.width - 150, Math.max(10, clampedX - 70));
+    tooltip.style.left = tooltipLeft + 'px';
+    tooltip.style.top = '48px';
+    tooltip.style.opacity = '1';
+  });
+
+  container.addEventListener('mouseleave', () => {
+    crosshair.setAttribute('opacity', '0');
+    dotPower.setAttribute('opacity', '0');
+    dotPres.setAttribute('opacity', '0');
+    tooltip.style.opacity = '0';
+  });
+}
+
+// Table severity filter
+function filterLogTable(severity) {
+  const rows = document.querySelectorAll('#log-tbody tr');
+  let visibleCount = 0;
+  rows.forEach(row => {
+    const rowSev = row.getAttribute('data-sev');
+    if (severity === 'ALL' || rowSev === severity) {
+      row.style.display = '';
+      visibleCount++;
+    } else {
+      row.style.display = 'none';
+    }
+  });
+  document.getElementById('log-count').innerText = `Showing ${visibleCount} of 128 registered facility telemetry events`;
+}
+
+// Diagnostics Mode Action
+function handleDiagnosticsMode() {
+  alert('Initiating Sub-Second Diagnostics Engine on GA-75 Unit 02.\nSwitching sensor polling frequency to 100 Hz high-speed mode.');
+}
+
+// Export Telemetry CSV
+function handleExportCSV() {
+  const csvContent = "data:text/csv;charset=utf-8," 
+    + "Timestamp,Channel,Observation,Severity,Variance\n"
+    + "14:10 IST,DE_BEARING_VIB,Vibration spike: 3.4 mm/s,INFO,+0.6 mm/s\n"
+    + "13:42 IST,PNEUMATIC_MANIFOLD,Unscheduled pressure drop at 6.38 bar,CRITICAL,-0.42 bar\n"
+    + "10:15 IST,GRID_MODULATION,Shift A to Shift B load transition,SYSTEM,0.00 %\n"
+    + "06:00 IST,CONDENSATE_VALVE_01,Daily purge cycle OK,RESOLVED,100% OK\n"
+    + "Yesterday,DUTY_UNLOADER,Idle run-on detected for 42 mins,WARNING,+42 MINS\n";
+  const encodedUri = encodeURI(csvContent);
+  const link = document.createElement("a");
+  link.setAttribute("href", encodedUri);
+  link.setAttribute("download", "GA-75_Unit02_Telemetry.csv");
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+}
+
+// Acknowledge Alert Toggle
+let alertAcknowledged = false;
+function handleAcknowledgeAlert() {
+  const btn = document.getElementById('ack-btn');
+  const txt = document.getElementById('ack-text');
+  const banner = document.getElementById('severity-banner');
+  const diagCard = document.getElementById('diagnostic-card');
+
+  alertAcknowledged = !alertAcknowledged;
+  if (alertAcknowledged) {
+    txt.innerText = "Alert Acknowledged";
+    btn.classList.remove('bg-tertiary-container', 'shadow-coral-glow');
+    btn.classList.add('bg-surface-container-high', 'border-primary/40');
+    banner.classList.remove('alert-halo', 'text-tertiary');
+    banner.classList.add('text-secondary', 'border-secondary/40');
+    diagCard.classList.remove('alert-halo');
+    alert('Alert ACKNOWLEDGED by Lead Auditor R. Kulkarni at ' + new Date().toLocaleTimeString('en-IN') + '.\nMaintenance desk dispatched notification.');
+  } else {
+    txt.innerText = "Acknowledge Alert";
+    btn.classList.add('bg-tertiary-container', 'shadow-coral-glow');
+    btn.classList.remove('bg-surface-container-high', 'border-primary/40');
+    banner.classList.add('alert-halo', 'text-tertiary');
+    banner.classList.remove('text-secondary', 'border-secondary/40');
+    diagCard.classList.add('alert-halo');
+  }
+}
+
+// Maintenance Work Order Creation
+function handleWorkOrder() {
+  const btn = document.getElementById('dispatch-btn');
+  const txt = document.getElementById('dispatch-text');
+  txt.innerText = "Work Order #WO-8841 Dispatched";
+  btn.classList.remove('bg-primary');
+  btn.classList.add('bg-emerald-600');
+  alert('WORK ORDER CREATED:\nAsset: Atlas Copco GA-75 (Unit 02)\nProtocol: Replace Teflon gasket on 50mm coupling\nAssigned to: Chakan Shift B Mechanical Crew\nTarget Window: 18:00 Shift Changeover');
+}
+</script>
+</body></html>

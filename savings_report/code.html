@@ -1,0 +1,844 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<meta content="web_dashboard" name="shell-type"/>
+<title>Energy Savings &amp; Decarbonization Audit Report | Energy Pilot</title>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Space Grotesk, JetBrains Mono, Inter fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500;600;700&amp;family=Space+Grotesk:wght@500;600;700&amp;display=swap" rel="stylesheet"/>
+<style>
+    @layer base {
+      html, body {
+        margin: 0;
+        padding: 0;
+        background-color: #0B0E12;
+      }
+      body {
+        overscroll-behavior: none;
+        font-family: 'Inter', sans-serif;
+      }
+      main > :first-child { margin-top: 0 !important; }
+      main > :last-child { margin-bottom: 0 !important; }
+    }
+    ::-webkit-scrollbar { display: none; }
+    .font-space { font-family: 'Space Grotesk', sans-serif; }
+    .font-mono-num {
+      font-family: 'JetBrains Mono', monospace;
+      font-variant-numeric: tabular-nums;
+    }
+    .font-inter { font-family: 'Inter', sans-serif; }
+
+    /* Stagger fade-in animation */
+    @keyframes fadeLift {
+      from {
+        opacity: 0;
+        transform: translateY(14px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    .animate-fade-lift {
+      animation: fadeLift 0.65s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+    .delay-1 { animation-delay: 0.08s; }
+    .delay-2 { animation-delay: 0.16s; }
+    .delay-3 { animation-delay: 0.24s; }
+    .delay-4 { animation-delay: 0.32s; }
+    .delay-5 { animation-delay: 0.40s; }
+
+    /* SVG Path Draw In Animation */
+    .line-draw {
+      stroke-dasharray: 1200;
+      stroke-dashoffset: 1200;
+      animation: drawLine 1.6s cubic-bezier(0.2, 0.8, 0.2, 1) 0.5s forwards;
+    }
+    @keyframes drawLine {
+      to {
+        stroke-dashoffset: 0;
+      }
+    }
+
+    /* Bar grow animation */
+    .bar-grow {
+      transform-origin: bottom;
+      animation: growUp 1.2s cubic-bezier(0.16, 1, 0.3, 1) 0.3s backwards;
+    }
+    @keyframes growUp {
+      from {
+        transform: scaleY(0);
+      }
+      to {
+        transform: scaleY(1);
+      }
+    }
+
+    /* Tooltip subtle appearance */
+    #chartTooltip {
+      pointer-events: none;
+      transition: opacity 0.15s ease, transform 0.15s ease;
+    }
+  </style>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "surface": "#0B0E12",
+            "surface-dim": "#080A0E",
+            "surface-container-lowest": "#06080B",
+            "surface-container-low": "#0F1318",
+            "surface-container": "#13181F",
+            "surface-container-high": "#19202A",
+            "surface-container-highest": "#212A36",
+            "outline": "#859490",
+            "outline-variant": "#273647",
+            "primary": "#2DD4BF",          /* Emerald-teal */
+            "primary-container": "#14b8a6",
+            "on-primary": "#003731",
+            "surface-tint": "#2dd4bf",
+            "secondary": "#F59E0B",        /* Amber */
+            "secondary-container": "#78350f",
+            "error": "#F43F5E",            /* Coral-red */
+            "error-container": "#881337",
+            "on-surface": "#F1F5F9",
+            "on-surface-variant": "#94A3B8"
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="bg-[#0B0E12] text-on-surface antialiased selection:bg-primary selection:text-on-primary font-inter">
+<!-- Fixed Navigation Sidebar -->
+<aside class="fixed left-0 top-0 h-screen w-60 bg-[#07090C] z-50 flex flex-col justify-between border-r border-white/[0.08] select-none shadow-[4px_0_30px_rgba(0,0,0,0.6)]">
+<div class="flex flex-col">
+<!-- Logo Branding with image 15 -->
+<div class="h-14 px-4 flex items-center gap-3 border-b border-white/[0.08]">
+<img alt="Energy Pilot Logo" class="h-8 w-8 rounded-lg object-contain ring-1 ring-primary/30 shadow-[0_0_12px_rgba(45,212,191,0.25)]" src="https://lh3.googleusercontent.com/aida/AEtjO1VFPwivtVaroMehk_3yLnec0D2o2lHTnCSQp_jH8STEiQO5tumeHtA_3emwv1sdd3jGqmbDImE-iornfI7Jrynql4r20uSovrM-FWarmr6NBuAHafudLdaSk6sFmLV0I4ewyEVyQc_pK5W2aTFXK8wUlaGG4Pb1O0g3UI1J97eaSF2rKnHBhzexruaB1U9oRfGftvhhhBFnj3tFaThFED8oasUFuBS83rLeNxPt9657WPyZ0lA-OfsvaTM"/>
+<div class="flex flex-col min-w-0">
+<span class="font-space text-sm font-bold tracking-tight text-white uppercase truncate">Energy Pilot</span>
+<span class="font-mono-num text-[10px] text-primary/80 uppercase tracking-wider font-semibold">Plant Telemetry v2.4</span>
+</div>
+</div>
+<!-- Facility Status Pill -->
+<div class="p-3">
+<div class="px-2.5 py-1.5 rounded-lg bg-[#0E1217] border border-white/[0.08] flex items-center justify-between shadow-inner">
+<div class="flex items-center gap-2 truncate">
+<span class="w-2 h-2 rounded-full bg-primary animate-pulse shrink-0 shadow-[0_0_8px_rgba(45,212,191,0.8)]"></span>
+<span class="font-mono-num text-[11px] text-slate-200 truncate font-medium">Chakan Plant #04 • Pune</span>
+</div>
+<span class="font-mono-num text-[10px] text-slate-400 shrink-0 ml-1 font-semibold">IN</span>
+</div>
+</div>
+<!-- Navigation Links -->
+<nav class="flex flex-col gap-1 px-3" data-active-classes="bg-gradient-to-r from-primary/15 to-transparent text-primary border-l-2 border-primary rounded-r-lg shadow-[0_0_24px_rgba(45,212,191,0.2)]">
+<a class="flex items-center gap-2.5 px-3 py-2 text-slate-400 hover:bg-white/[0.04] hover:text-white transition-all rounded-lg text-xs font-medium" data-path="overview" href="#">
+<span class="material-symbols-outlined text-[19px] leading-none">speed</span>
+<span>Overview</span>
+</a>
+<a class="flex items-center gap-2.5 px-3 py-2 text-slate-400 hover:bg-white/[0.04] hover:text-white transition-all rounded-lg text-xs font-medium" data-path="machines" href="#">
+<span class="material-symbols-outlined text-[19px] leading-none">precision_manufacturing</span>
+<span>Machines</span>
+</a>
+<a aria-current="page" class="flex items-center gap-2.5 px-3 py-2 transition-all text-xs font-medium bg-gradient-to-r from-primary/15 to-transparent text-primary border-l-2 border-primary rounded-r-lg shadow-[0_0_24px_rgba(45,212,191,0.2)]" data-path="savings" href="#">
+<span class="material-symbols-outlined text-[19px] leading-none">energy_savings_leaf</span>
+<span class="font-semibold tracking-wide">Savings</span>
+</a>
+<a class="flex items-center gap-2.5 px-3 py-2 text-slate-400 hover:bg-white/[0.04] hover:text-white transition-all rounded-lg text-xs font-medium" data-path="settings" href="#">
+<span class="material-symbols-outlined text-[19px] leading-none">tune</span>
+<span>Settings</span>
+</a>
+</nav>
+</div>
+<!-- Sidebar Bottom Status Footer -->
+<div class="p-3 border-t border-white/[0.08] bg-[#050709]/80 backdrop-blur">
+<div class="flex flex-col gap-1">
+<div class="flex items-center justify-between text-[10px] text-slate-400 uppercase tracking-wider font-semibold">
+<span>Pneumatic Loop A</span>
+<span class="text-primary font-mono-num font-bold drop-shadow-[0_0_8px_rgba(45,212,191,0.4)]">6.8 BAR</span>
+</div>
+<div class="text-xs text-slate-300 truncate font-medium">Compressor Ring: Nominal</div>
+<div class="flex items-center gap-1.5 mt-1 pt-1 border-t border-white/[0.06]">
+<span class="w-1.5 h-1.5 rounded-full bg-primary shadow-[0_0_6px_rgba(45,212,191,0.8)]"></span>
+<span class="font-mono-num text-[10px] text-slate-400 truncate">Telemetry sync: 12ms jitter</span>
+</div>
+</div>
+</div>
+</aside>
+<!-- Main Content Shell -->
+<div class="pl-60 min-h-screen bg-[#0B0E12]">
+<!-- Top Sticky Header with Frosted Glass -->
+<header class="sticky top-0 z-30 h-14 backdrop-blur-xl bg-[#0B0E12]/85 border-b border-white/[0.08] px-6 flex items-center justify-between shadow-[0_4px_24px_rgba(0,0,0,0.5)]">
+<div class="flex items-center gap-4 min-w-0">
+<div class="flex items-center gap-1.5 text-xs text-slate-400">
+<span class="text-slate-200 font-medium truncate">Chakan Facility</span>
+<span class="text-white/30">/</span>
+<span class="truncate">Sector 3</span>
+</div>
+<span class="h-3 w-px bg-white/15"></span>
+<div class="flex items-center gap-1.5 px-2.5 py-0.5 rounded-md bg-white/[0.04] border border-white/[0.08]">
+<span class="font-mono-num text-[10px] text-secondary font-bold uppercase tracking-wide">Shift B</span>
+<span class="text-white/30 text-[10px]">•</span>
+<span class="font-mono-num text-[10px] text-slate-300 truncate">Unit 2 Pneumatics</span>
+</div>
+</div>
+<!-- Live Heartbeat Indicator -->
+<div class="hidden xl:flex items-center gap-2 px-3.5 py-1 rounded-full bg-primary/10 border border-primary/25 shadow-[0_0_16px_rgba(45,212,191,0.15)]">
+<span class="relative flex h-2 w-2">
+<span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
+<span class="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
+</span>
+<span class="font-mono-num text-[10px] text-primary tracking-wider uppercase font-semibold">Live Telemetry • Latency 240ms • 50.04 Hz Grid</span>
+</div>
+<!-- Header Right Profile and Actions -->
+<div class="flex items-center gap-3 shrink-0">
+<button class="hidden sm:flex items-center gap-1.5 px-3 py-1 rounded-md bg-white/[0.05] hover:bg-white/[0.09] border border-white/[0.1] text-slate-200 font-mono-num text-[11px] font-medium transition-all duration-150 hover:scale-[1.02] active:scale-[0.98]">
+<span class="material-symbols-outlined text-sm leading-none text-slate-400">download</span>
+<span>Export Telemetry</span>
+</button>
+<button aria-label="Notifications" class="relative p-1.5 rounded-md hover:bg-white/[0.05] text-slate-400 hover:text-white transition-colors">
+<span class="material-symbols-outlined text-[20px] leading-none">notifications</span>
+<span class="absolute top-1 right-1 w-2 h-2 rounded-full bg-error ring-2 ring-[#0B0E12] shadow-[0_0_8px_rgba(244,63,94,0.7)]"></span>
+</button>
+<!-- User Profile Avatar with IMAGE_14 -->
+<div class="flex items-center gap-2.5 pl-2 border-l border-white/[0.1]">
+<img alt="R. Kulkarni Lead Auditor" class="w-8 h-8 rounded-full object-cover ring-1 ring-primary/40 shadow-[0_0_12px_rgba(45,212,191,0.25)]" src="https://lh3.googleusercontent.com/aida/AEtjO1Xdx8gJmcaL1ZtKpx8kuQ2MlV7NWJZg6HCrE87crvmvC5Y-c3witUKfGY9foIOJispjp0N6mSHZP5C70aNdK32RoSlwjrLJYHyEUq3Ff6Ivdzv3nzYJjiOOzioGj6imllp194rLH41WGWBmI81ZmaNnaq-ZmUfLU-eaFt6I_duXd6rHnmE_kXz5r8_D0xUWLjfLUD6PwTmntZl4wUyB6JS9EUnqIzD0tfkSjUgO--RL7yNwQVHIIcc54hI"/>
+<div class="hidden md:flex flex-col text-left">
+<span class="text-xs font-semibold leading-none text-white">R. Kulkarni</span>
+<span class="text-[10px] text-slate-400 uppercase tracking-wider font-mono-num mt-0.5">Lead Auditor</span>
+</div>
+</div>
+</div>
+</header>
+<!-- Main Container -->
+<main class="relative w-full px-6 py-6 min-h-screen">
+<div class="flex flex-col w-full gap-6">
+<!-- Top Audit Header & Context Navigation -->
+<section class="animate-fade-lift relative flex flex-col xl:flex-row xl:items-end justify-between gap-4 p-5 rounded-2xl backdrop-blur-xl bg-[#10141A]/90 border-t border-white/[0.16] border-x border-b border-white/[0.06] shadow-[0_20px_40px_-15px_rgba(0,0,0,0.7)] overflow-hidden">
+<!-- Subtle corner ambient radial light -->
+<div class="absolute -right-20 -top-20 w-80 h-80 bg-primary/10 rounded-full blur-3xl pointer-events-none"></div>
+<div class="relative z-10 flex flex-col gap-1.5 min-w-0">
+<div class="flex items-center gap-2 font-mono-num text-[11px] text-primary tracking-widest uppercase font-semibold">
+<span class="inline-block w-2 h-2 rounded-full bg-primary shadow-[0_0_8px_rgba(45,212,191,0.8)]"></span>
+<span>Bureau of Energy Efficiency (BEE) Compliance Frame</span>
+<span class="text-white/30">/</span>
+<span class="text-slate-300">ISO 50001:2018 Certified EnMS</span>
+</div>
+<h1 class="font-space text-2xl md:text-3xl font-bold text-white uppercase tracking-tight drop-shadow-sm">
+              Energy Savings &amp; Decarbonization Audit Report
+            </h1>
+<p class="text-xs text-slate-400 font-inter">
+              Facility: Chakan Auto-Components Plant 04 • Billing Period: October 2024 (Verified against MSEDCL HT Tariff Category Express Feeder 22kV)
+            </p>
+</div>
+<!-- Action Toolbar with Frosted Bar & Interactive Export -->
+<div class="relative z-10 flex flex-wrap items-center gap-2.5 shrink-0">
+<div class="flex items-center bg-[#0B0E12]/80 backdrop-blur-md px-3 py-1.5 rounded-lg border border-white/[0.08] gap-2 shadow-inner">
+<span class="material-symbols-outlined text-slate-400 text-sm">calendar_today</span>
+<span class="font-mono-num text-xs text-slate-200 font-medium">Oct 1 – Oct 31, 2024</span>
+</div>
+<div class="flex items-center bg-[#0B0E12]/80 backdrop-blur-md px-3 py-1.5 rounded-lg border border-white/[0.08] gap-2 shadow-inner">
+<span class="material-symbols-outlined text-slate-400 text-sm">history</span>
+<span class="font-mono-num text-xs text-slate-400">Baseline:</span>
+<span class="font-mono-num text-xs text-slate-200 font-medium">Q1 Pre-Audit Baseline (2023)</span>
+</div>
+<button class="relative group overflow-hidden flex items-center gap-2 px-4 py-2 rounded-lg bg-gradient-to-r from-primary to-emerald-400 text-on-primary font-inter text-xs font-semibold tracking-wide shadow-[0_0_24px_rgba(45,212,191,0.35)] hover:shadow-[0_0_32px_rgba(45,212,191,0.5)] transition-all duration-200 hover:scale-[1.02] active:scale-[0.97]" id="exportBtn">
+<span class="material-symbols-outlined text-[17px] leading-none transition-transform duration-200 group-hover:-translate-y-0.5" id="exportIcon">picture_as_pdf</span>
+<span id="exportText">Export Audit Report (PDF / ISO 50001)</span>
+</button>
+</div>
+</section>
+<!-- Monthly Summary Hero Metrics (4 Clean Metric Blocks with hairline borders & tactile finish) -->
+<section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+<!-- Metric 1: Realized Savings (Ambient Teal Radial Bloom) -->
+<div class="animate-fade-lift delay-1 relative flex flex-col justify-between p-5 bg-[#10141B] rounded-2xl border-t border-white/[0.22] border-x border-b border-white/[0.06] shadow-[0_20px_40px_-15px_rgba(0,0,0,0.7)] transition-all duration-300 ease-out hover:-translate-y-1 hover:border-primary/40 overflow-hidden group">
+<!-- Radial Teal Glow Bloom -->
+<div class="absolute inset-0 pointer-events-none bg-[radial-gradient(ellipse_at_top,_rgba(45,212,191,0.22)_0%,_transparent_75%)] opacity-80 group-hover:opacity-100 transition-opacity"></div>
+<div class="relative z-10 flex items-center justify-between">
+<span class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider font-inter">Total Realized Savings</span>
+<span class="font-mono-num text-[10px] px-2 py-0.5 rounded-full bg-primary/15 text-primary border border-primary/30 font-semibold shadow-[0_0_12px_rgba(45,212,191,0.2)]">Verified MSEDCL</span>
+</div>
+<div class="relative z-10 my-4">
+<div class="font-mono-num text-3xl xl:text-[34px] font-bold text-white tracking-tight leading-none drop-shadow-[0_0_24px_rgba(45,212,191,0.4)]" id="metricSavings">
+                ₹4,82,350
+              </div>
+<div class="flex items-center gap-1.5 mt-2 text-primary font-mono-num text-xs font-medium">
+<span class="material-symbols-outlined text-sm leading-none">trending_up</span>
+<span>+18.4% above guaranteed payback target</span>
+</div>
+</div>
+<div class="relative z-10 pt-3 border-t border-white/[0.08] flex items-center justify-between font-mono-num text-xs text-slate-400">
+<span>Contracted Target</span>
+<span class="text-slate-200 font-semibold">₹4,07,390</span>
+</div>
+</div>
+<!-- Metric 2: Pneumatic & Motor Energy -->
+<div class="animate-fade-lift delay-2 relative flex flex-col justify-between p-5 bg-[#10141B] rounded-2xl border-t border-white/[0.16] border-x border-b border-white/[0.06] shadow-[0_20px_40px_-15px_rgba(0,0,0,0.7)] transition-all duration-300 ease-out hover:-translate-y-1 hover:border-primary/40 group">
+<div class="flex items-center justify-between">
+<span class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider font-inter">Pneumatic &amp; Motor Energy</span>
+<div class="w-7 h-7 rounded-lg bg-white/[0.04] border border-white/[0.08] flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-[17px]">bolt</span>
+</div>
+</div>
+<div class="my-4">
+<div class="font-mono-num text-3xl xl:text-[34px] font-bold text-white tracking-tight leading-none">
+<span id="metricEnergy">54,280</span> <span class="text-lg font-normal text-slate-400">kWh</span>
+</div>
+<div class="mt-2 text-slate-400 font-mono-num text-xs font-normal">
+                Equivalent to 12.8% reduction in monthly grid tariff
+              </div>
+</div>
+<div class="pt-3 border-t border-white/[0.08] flex items-center justify-between font-mono-num text-xs text-slate-400">
+<span>Avoided Peak Demand</span>
+<span class="text-primary font-semibold drop-shadow-[0_0_8px_rgba(45,212,191,0.3)]">82.4 kVA</span>
+</div>
+</div>
+<!-- Metric 3: Carbon Emissions Avoided -->
+<div class="animate-fade-lift delay-3 relative flex flex-col justify-between p-5 bg-[#10141B] rounded-2xl border-t border-white/[0.16] border-x border-b border-white/[0.06] shadow-[0_20px_40px_-15px_rgba(0,0,0,0.7)] transition-all duration-300 ease-out hover:-translate-y-1 hover:border-primary/40 group">
+<div class="flex items-center justify-between">
+<span class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider font-inter">Carbon Emissions Avoided</span>
+<div class="w-7 h-7 rounded-lg bg-secondary/10 border border-secondary/25 flex items-center justify-center text-secondary">
+<span class="material-symbols-outlined text-[17px]">eco</span>
+</div>
+</div>
+<div class="my-4">
+<div class="font-mono-num text-3xl xl:text-[34px] font-bold text-white tracking-tight leading-none">
+<span id="metricCarbon">44.5</span> <span class="text-lg font-normal text-slate-400">tCO₂e</span>
+</div>
+<div class="mt-2 text-slate-400 font-mono-num text-xs truncate">
+                CEA India v19 Factor: 0.82 kg CO₂/kWh
+              </div>
+</div>
+<div class="pt-3 border-t border-white/[0.08] flex items-center justify-between font-mono-num text-xs text-slate-400">
+<span>FY24 Cumulative Offsets</span>
+<span class="text-secondary font-semibold drop-shadow-[0_0_8px_rgba(245,158,11,0.3)]">238.1 tCO₂e</span>
+</div>
+</div>
+<!-- Metric 4: Specific Power (SPC) -->
+<div class="animate-fade-lift delay-4 relative flex flex-col justify-between p-5 bg-[#10141B] rounded-2xl border-t border-white/[0.16] border-x border-b border-white/[0.06] shadow-[0_20px_40px_-15px_rgba(0,0,0,0.7)] transition-all duration-300 ease-out hover:-translate-y-1 hover:border-primary/40 group">
+<div class="flex items-center justify-between">
+<span class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider font-inter">Specific Power (SPC)</span>
+<div class="w-7 h-7 rounded-lg bg-white/[0.04] border border-white/[0.08] flex items-center justify-center text-slate-300">
+<span class="material-symbols-outlined text-[17px]">speed</span>
+</div>
+</div>
+<div class="my-4">
+<div class="font-mono-num text-3xl xl:text-[34px] font-bold text-white tracking-tight leading-none">
+<span id="metricSpc">0.112</span> <span class="text-xs font-normal text-slate-400 uppercase tracking-wider">kWh/Nm³</span>
+</div>
+<div class="flex items-center gap-1.5 mt-2 text-primary font-mono-num text-xs font-medium">
+<span class="material-symbols-outlined text-sm leading-none">arrow_downward</span>
+<span>Improved from 0.138 kWh/Nm³ pre-optimization</span>
+</div>
+</div>
+<div class="pt-3 border-t border-white/[0.08] flex items-center justify-between font-mono-num text-xs text-slate-400">
+<span>Benchmark Threshold</span>
+<span class="text-slate-200 font-semibold">0.110 (ISO Target)</span>
+</div>
+</div>
+</section>
+<!-- Middle Section: Baseline vs Actual Telemetry Comparison Chart -->
+<section class="animate-fade-lift delay-2 flex flex-col bg-[#10141B] rounded-2xl border-t border-white/[0.16] border-x border-b border-white/[0.06] shadow-[0_20px_40px_-15px_rgba(0,0,0,0.7)] overflow-hidden transition-all duration-300 ease-out hover:border-primary/30">
+<!-- Card Header Strip -->
+<div class="p-5 border-b border-white/[0.06] flex flex-col md:flex-row md:items-center justify-between gap-3 bg-[#0C0F14]/70 backdrop-blur-md">
+<div class="flex flex-col gap-1">
+<div class="flex items-center gap-2 text-[10px] text-slate-400 uppercase tracking-widest font-mono-num font-semibold">
+<span class="w-1.5 h-1.5 rounded-full bg-primary shadow-[0_0_6px_rgba(45,212,191,0.8)]"></span>
+<span>Continuous Telemetry Reconciliation</span>
+<span>•</span>
+<span class="text-primary">6-Month Trend Trajectory</span>
+</div>
+<h2 class="font-space text-lg md:text-xl font-bold text-white tracking-tight">
+                Baseline vs Actual Consumption (Month-over-Month FY2024)
+              </h2>
+</div>
+<!-- Chart Legend -->
+<div class="flex flex-wrap items-center gap-4 font-mono-num text-xs">
+<div class="flex items-center gap-2">
+<span class="w-3 h-3 rounded bg-[#334155]/80 border border-slate-500/40"></span>
+<span class="text-slate-300">Baseline Pre-Audit (kWh)</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="w-3 h-3 rounded bg-primary shadow-[0_0_8px_rgba(45,212,191,0.5)]"></span>
+<span class="text-white font-medium">Actual Measured (kWh)</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="w-4 h-1 rounded-full bg-secondary shadow-[0_0_8px_rgba(245,158,11,0.7)]"></span>
+<span class="text-secondary font-medium">Delta Savings Trajectory (₹)</span>
+</div>
+</div>
+</div>
+<!-- Data Visualization Area -->
+<div class="p-5 flex flex-col gap-5">
+<!-- High Density SVG Multi-Bar & Trajectory Chart with Interactive Tooltip -->
+<div class="relative w-full h-80" id="chartContainer">
+<svg class="w-full h-full overflow-visible" preserveaspectratio="none" viewbox="0 0 1100 320">
+<defs>
+<lineargradient id="savingsAreaGrad" x1="0%" x2="0%" y1="0%" y2="100%">
+<stop offset="0%" stop-color="#F59E0B" stop-opacity="0.32"></stop>
+<stop offset="70%" stop-color="#F59E0B" stop-opacity="0.05"></stop>
+<stop offset="100%" stop-color="#F59E0B" stop-opacity="0.0"></stop>
+</lineargradient>
+<!-- Actual measured subtle radiant teal gradient -->
+<lineargradient id="tealBarGrad" x1="0%" x2="0%" y1="0%" y2="100%">
+<stop offset="0%" stop-color="#2DD4BF" stop-opacity="1"></stop>
+<stop offset="100%" stop-color="#0f766e" stop-opacity="0.9"></stop>
+</lineargradient>
+<!-- October Active Bar Glow -->
+<lineargradient id="activeOctGrad" x1="0%" x2="0%" y1="0%" y2="100%">
+<stop offset="0%" stop-color="#5eead4" stop-opacity="1"></stop>
+<stop offset="100%" stop-color="#14b8a6" stop-opacity="1"></stop>
+</lineargradient>
+<!-- Baseline Bar Gradient -->
+<lineargradient id="baseBarGrad" x1="0%" x2="0%" y1="0%" y2="100%">
+<stop offset="0%" stop-color="#334155" stop-opacity="0.95"></stop>
+<stop offset="100%" stop-color="#1e293b" stop-opacity="0.8"></stop>
+</lineargradient>
+<filter height="140%" id="tealGlow" width="140%" x="-20%" y="-20%">
+<fegaussianblur result="blur" stddeviation="4"></fegaussianblur>
+<fecomposite in="SourceGraphic" in2="blur" operator="over"></fecomposite>
+</filter>
+<filter height="140%" id="goldGlow" width="140%" x="-20%" y="-20%">
+<fegaussianblur result="blur" stddeviation="3.5"></fegaussianblur>
+<fecomposite in="SourceGraphic" in2="blur" operator="over"></fecomposite>
+</filter>
+<pattern height="40" id="gridPattern" patternunits="userSpaceOnUse" width="183.33">
+<path d="M 0 40 L 1100 40 M 183.33 0 L 183.33 320" fill="none" stroke="#1E293B" stroke-dasharray="2,4" stroke-width="0.7"></path>
+</pattern>
+</defs>
+<!-- Background Grid Lines -->
+<rect fill="url(#gridPattern)" height="270" width="1100" y="5"></rect>
+<!-- Y-Axis Labels Left (kWh) -->
+<text class="fill-slate-400 font-mono-num text-[11px]" x="12" y="24">220k kWh</text>
+<text class="fill-slate-400 font-mono-num text-[11px]" x="12" y="80">180k kWh</text>
+<text class="fill-slate-400 font-mono-num text-[11px]" x="12" y="140">140k kWh</text>
+<text class="fill-slate-400 font-mono-num text-[11px]" x="12" y="200">100k kWh</text>
+<text class="fill-slate-400 font-mono-num text-[11px]" x="12" y="260">60k kWh</text>
+<!-- Right Y-Axis Labels (Monetary Scale) -->
+<text class="fill-secondary font-mono-num text-[11px] font-semibold" x="1025" y="24">₹5.0 Lakh</text>
+<text class="fill-secondary/90 font-mono-num text-[11px]" x="1025" y="140">₹2.5 Lakh</text>
+<text class="fill-secondary/70 font-mono-num text-[11px]" x="1025" y="260">₹0.0 Lakh</text>
+<!-- Interactive Column Hit Areas & Bar Columns -->
+<!-- Column 1: MAY 2024 -->
+<g class="month-col cursor-pointer transition-all duration-200" data-actual="191,000 kWh" data-baseline="202,000 kWh" data-delta="-11,000 kWh" data-month="May 2024" data-savings="₹97,790" data-x="132" data-y="250">
+<rect class="hover:fill-white/[0.04] transition-colors" fill="transparent" height="295" width="120" x="72" y="10"></rect>
+<rect class="bar-grow" fill="url(#baseBarGrad)" height="204" rx="2" width="28" x="102" y="66"></rect>
+<rect class="bar-grow" fill="url(#tealBarGrad)" height="188" rx="2" width="28" x="134" y="82"></rect>
+<text class="fill-slate-300 font-mono-num text-[11px] font-medium" text-anchor="middle" x="132" y="295">MAY 2024</text>
+<text class="fill-slate-400 font-mono-num text-[10px]" text-anchor="middle" x="132" y="310">Δ -11,000 kWh</text>
+</g>
+<!-- Column 2: JUN 2024 -->
+<g class="month-col cursor-pointer transition-all duration-200" data-actual="178,000 kWh" data-baseline="199,000 kWh" data-delta="-21,000 kWh" data-month="June 2024" data-savings="₹1,86,690" data-x="302" data-y="220">
+<rect class="hover:fill-white/[0.04] transition-colors" fill="transparent" height="295" width="120" x="242" y="10"></rect>
+<rect class="bar-grow" fill="url(#baseBarGrad)" height="200" rx="2" width="28" x="272" y="70"></rect>
+<rect class="bar-grow" fill="url(#tealBarGrad)" height="169" rx="2" width="28" x="304" y="101"></rect>
+<text class="fill-slate-300 font-mono-num text-[11px] font-medium" text-anchor="middle" x="302" y="295">JUN 2024</text>
+<text class="fill-slate-400 font-mono-num text-[10px]" text-anchor="middle" x="302" y="310">Δ -21,000 kWh</text>
+</g>
+<!-- Column 3: JUL 2024 -->
+<g class="month-col cursor-pointer transition-all duration-200" data-actual="171,000 kWh" data-baseline="205,000 kWh" data-delta="-34,000 kWh" data-month="July 2024" data-savings="₹3,02,260" data-x="472" data-y="175">
+<rect class="hover:fill-white/[0.04] transition-colors" fill="transparent" height="295" width="120" x="412" y="10"></rect>
+<rect class="bar-grow" fill="url(#baseBarGrad)" height="208" rx="2" width="28" x="442" y="62"></rect>
+<rect class="bar-grow" fill="url(#tealBarGrad)" height="158" rx="2" width="28" x="474" y="112"></rect>
+<text class="fill-slate-300 font-mono-num text-[11px] font-medium" text-anchor="middle" x="472" y="295">JUL 2024</text>
+<text class="fill-slate-400 font-mono-num text-[10px]" text-anchor="middle" x="472" y="310">Δ -34,000 kWh</text>
+</g>
+<!-- Column 4: AUG 2024 -->
+<g class="month-col cursor-pointer transition-all duration-200" data-actual="158,000 kWh" data-baseline="196,000 kWh" data-delta="-38,000 kWh" data-month="August 2024" data-savings="₹3,37,820" data-x="642" data-y="130">
+<rect class="hover:fill-white/[0.04] transition-colors" fill="transparent" height="295" width="120" x="582" y="10"></rect>
+<rect class="bar-grow" fill="url(#baseBarGrad)" height="195" rx="2" width="28" x="612" y="75"></rect>
+<rect class="bar-grow" fill="url(#tealBarGrad)" height="138" rx="2" width="28" x="644" y="132"></rect>
+<text class="fill-slate-300 font-mono-num text-[11px] font-medium" text-anchor="middle" x="642" y="295">AUG 2024</text>
+<text class="fill-slate-400 font-mono-num text-[10px]" text-anchor="middle" x="642" y="310">Δ -38,000 kWh</text>
+</g>
+<!-- Column 5: SEP 2024 -->
+<g class="month-col cursor-pointer transition-all duration-200" data-actual="151,000 kWh" data-baseline="201,000 kWh" data-delta="-50,000 kWh" data-month="September 2024" data-savings="₹4,44,500" data-x="812" data-y="80">
+<rect class="hover:fill-white/[0.04] transition-colors" fill="transparent" height="295" width="120" x="752" y="10"></rect>
+<rect class="bar-grow" fill="url(#baseBarGrad)" height="202" rx="2" width="28" x="782" y="68"></rect>
+<rect class="bar-grow" fill="url(#tealBarGrad)" height="128" rx="2" width="28" x="814" y="142"></rect>
+<text class="fill-slate-300 font-mono-num text-[11px] font-medium" text-anchor="middle" x="812" y="295">SEP 2024</text>
+<text class="fill-slate-400 font-mono-num text-[10px]" text-anchor="middle" x="812" y="310">Δ -50,000 kWh</text>
+</g>
+<!-- Column 6: OCT 2024 (ACTIVE) -->
+<g class="month-col cursor-pointer transition-all duration-200" data-actual="143,720 kWh" data-baseline="198,000 kWh" data-delta="-54,280 kWh" data-month="October 2024" data-savings="₹4,82,350" data-x="982" data-y="35">
+<rect class="hover:fill-primary/[0.08] transition-colors" fill="transparent" height="295" width="120" x="922" y="10"></rect>
+<rect class="bar-grow" fill="url(#baseBarGrad)" height="198" rx="2" width="28" x="952" y="72"></rect>
+<!-- Active teal glowing bar -->
+<rect class="bar-grow" fill="url(#activeOctGrad)" filter="url(#tealGlow)" height="117" rx="2" width="28" x="984" y="153"></rect>
+<text class="fill-primary font-mono-num text-[11px] font-bold" text-anchor="middle" x="982" y="295">OCT 2024 (ACTIVE)</text>
+<text class="fill-primary font-mono-num text-[10px] font-semibold" text-anchor="middle" x="982" y="310">Δ -54,280 kWh</text>
+<circle cx="998" cy="153" fill="#2DD4BF" r="3.5" stroke="#0B0E12" stroke-width="2"></circle>
+</g>
+<!-- Area Fill Under Trajectory Line -->
+<path d="M 132 250 L 302 220 L 472 175 L 642 130 L 812 80 L 982 35 L 982 270 L 132 270 Z" fill="url(#savingsAreaGrad)"></path>
+<!-- Animated Delta Savings Trajectory Trend Line -->
+<path class="line-draw" d="M 132 250 L 302 220 L 472 175 L 642 130 L 812 80 L 982 35" fill="none" filter="url(#goldGlow)" stroke="#F59E0B" stroke-linecap="round" stroke-linejoin="round" stroke-width="3"></path>
+<!-- Line Vertices -->
+<circle cx="132" cy="250" fill="#F59E0B" r="3.5" stroke="#0B0E12" stroke-width="1.5"></circle>
+<circle cx="302" cy="220" fill="#F59E0B" r="3.5" stroke="#0B0E12" stroke-width="1.5"></circle>
+<circle cx="472" cy="175" fill="#F59E0B" r="3.5" stroke="#0B0E12" stroke-width="1.5"></circle>
+<circle cx="642" cy="130" fill="#F59E0B" r="3.5" stroke="#0B0E12" stroke-width="1.5"></circle>
+<circle cx="812" cy="80" fill="#F59E0B" r="3.5" stroke="#0B0E12" stroke-width="1.5"></circle>
+<circle cx="982" cy="35" fill="#F59E0B" r="5" stroke="#0B0E12" stroke-width="2"></circle>
+<!-- Label above current peak -->
+<g filter="url(#goldGlow)">
+<rect fill="#131B24" height="22" rx="4" stroke="#F59E0B" stroke-width="1" width="148" x="908" y="7"></rect>
+<text class="fill-secondary font-mono-num text-[11px] font-bold" text-anchor="middle" x="982" y="22">₹4,82,350 Realized</text>
+</g>
+</svg>
+<!-- Pulsing Ring over October Realized Point -->
+<div class="pointer-events-none absolute" style="left: calc(89.27% - 10px); top: calc(10.94% - 10px);">
+<span class="flex h-5 w-5 relative">
+<span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-secondary opacity-80"></span>
+<span class="relative inline-flex rounded-full h-5 w-5 bg-secondary/30 border border-secondary shadow-[0_0_12px_rgba(245,158,11,0.8)]"></span>
+</span>
+</div>
+<!-- Interactive Floating Tooltip -->
+<div class="absolute opacity-0 bg-[#0C1017]/95 border border-primary/40 rounded-xl px-3 py-2 shadow-[0_10px_25px_rgba(0,0,0,0.8)] backdrop-blur-md pointer-events-none z-30 flex flex-col gap-0.5" id="chartTooltip">
+<span class="font-space text-xs font-bold text-white" id="ttMonth">Month</span>
+<div class="flex items-center gap-2 font-mono-num text-[11px]">
+<span class="text-slate-400">Delta Saved:</span>
+<span class="text-primary font-bold" id="ttDelta">-54,280 kWh</span>
+</div>
+<div class="flex items-center gap-2 font-mono-num text-[11px]">
+<span class="text-slate-400">Total Yield:</span>
+<span class="text-secondary font-bold" id="ttSavings">₹4,82,350</span>
+</div>
+</div>
+</div>
+<!-- Key Insights Strip Below Chart -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-3 pt-2 border-t border-white/[0.08]">
+<div class="flex items-start gap-3 p-3.5 rounded-xl bg-white/[0.02] border border-white/[0.06] hover:border-primary/25 transition-colors">
+<div class="w-7 h-7 rounded-lg bg-primary/10 border border-primary/25 flex items-center justify-center text-primary shrink-0 mt-0.5">
+<span class="material-symbols-outlined text-[17px]">check_circle</span>
+</div>
+<div class="flex flex-col min-w-0">
+<span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider font-mono-num">Operational De-Coupling</span>
+<p class="text-xs text-slate-300 font-inter mt-1 leading-relaxed">
+                    Unloaded run-time reduction contributed <strong class="text-primary font-semibold">58% of total energy reduction</strong> across primary screw compressors during off-cycle tooling sequences.
+                  </p>
+</div>
+</div>
+<div class="flex items-start gap-3 p-3.5 rounded-xl bg-white/[0.02] border border-white/[0.06] hover:border-primary/25 transition-colors">
+<div class="w-7 h-7 rounded-lg bg-primary/10 border border-primary/25 flex items-center justify-center text-primary shrink-0 mt-0.5">
+<span class="material-symbols-outlined text-[17px]">graphic_eq</span>
+</div>
+<div class="flex flex-col min-w-0">
+<span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider font-mono-num">Acoustic Audit Findings</span>
+<p class="text-xs text-slate-300 font-inter mt-1 leading-relaxed">
+                    Acoustic ultrasonic leak fixes across Bay 2 manifold recovered <strong class="text-primary font-semibold">18.2 CFM in system pressure</strong>, stabilizing distribution loop at 6.8 bar.
+                  </p>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Bottom Section: Ranked High-Value Energy Recovery Opportunities -->
+<section class="animate-fade-lift delay-3 flex flex-col gap-4">
+<div class="flex flex-col sm:flex-row sm:items-end justify-between gap-2">
+<div>
+<div class="flex items-center gap-2 text-[10px] text-slate-400 uppercase tracking-widest font-mono-num font-semibold">
+<span class="w-2 h-2 rounded-full bg-secondary shadow-[0_0_8px_rgba(245,158,11,0.8)]"></span>
+<span>Prioritized Action Matrix</span>
+</div>
+<h2 class="font-space text-lg md:text-xl font-bold text-white tracking-tight mt-1">
+                Ranked Opportunities: High-Value Energy Recovery
+              </h2>
+<p class="text-xs text-slate-400 font-inter">
+                Calculated based on continuous telemetry, unloader cycling losses, and ultrasonic pressure drop audits
+              </p>
+</div>
+<div class="flex items-center gap-2 font-mono-num text-xs text-slate-400 bg-white/[0.03] px-3 py-1.5 rounded-lg border border-white/[0.06]">
+<span>Total Addressable Leakage:</span>
+<span class="text-secondary font-bold drop-shadow-[0_0_8px_rgba(245,158,11,0.4)]">₹91,700 / mo</span>
+</div>
+</div>
+<!-- Ranked Cards Grid -->
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+<!-- Opportunity 1 (Coral Red Alert) -->
+<div class="group relative flex flex-col justify-between p-5 bg-[#10141B] rounded-2xl border-l-[3px] border-l-error border-t border-white/[0.18] border-r border-white/[0.06] border-b border-white/[0.06] shadow-[0_20px_40px_-15px_rgba(0,0,0,0.7)] transition-all duration-300 ease-out hover:-translate-y-1 hover:border-r-primary/40 hover:border-t-primary/40 hover:shadow-[0_25px_50px_-12px_rgba(244,63,94,0.2)]">
+<div class="flex flex-col gap-2">
+<div class="flex items-center justify-between gap-2">
+<div class="flex items-center gap-2 min-w-0">
+<span class="font-mono-num text-[11px] text-slate-300 bg-white/[0.08] px-2 py-0.5 rounded font-bold shrink-0">#01</span>
+<span class="font-space text-sm md:text-base font-semibold text-white truncate">Compressor GA-75 #02: Discharge Flange Leak</span>
+</div>
+<!-- Red Badge -->
+<span class="shrink-0 font-mono-num text-[10px] px-2.5 py-1 rounded-full bg-error/15 text-error border border-error/30 font-semibold shadow-[0_0_12px_rgba(244,63,94,0.25)]">
+                    Urgent Action Required
+                  </span>
+</div>
+<!-- Impact Metrics Box -->
+<div class="mt-2 grid grid-cols-2 gap-3 p-3 rounded-xl bg-[#080B0F]/80 border border-white/[0.06] shadow-inner">
+<div>
+<span class="text-[10px] text-slate-400 uppercase tracking-wider block font-inter font-semibold">Identified Waste</span>
+<span class="font-mono-num text-sm md:text-base text-error font-bold drop-shadow-[0_0_8px_rgba(244,63,94,0.3)]">16.8 CFM continuous</span>
+</div>
+<div>
+<span class="text-[10px] text-slate-400 uppercase tracking-wider block font-inter font-semibold">Estimated Loss</span>
+<span class="font-mono-num text-sm md:text-base text-error font-bold drop-shadow-[0_0_8px_rgba(244,63,94,0.3)]">₹37,200 / month</span>
+</div>
+</div>
+<div class="flex items-center gap-2 text-xs text-slate-300 font-inter mt-1">
+<span class="material-symbols-outlined text-slate-400 text-sm">schedule</span>
+<span>Payback Period: <strong class="text-white font-medium">Immediate (&lt; 2 days with Viton seal replacement)</strong></span>
+</div>
+</div>
+<div class="mt-4 pt-3 border-t border-white/[0.08] flex items-center justify-between">
+<span class="font-mono-num text-xs text-slate-400">Detected: Ultrasonic Tag #CH-FL-08</span>
+<button class="action-btn flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-error/10 hover:bg-error/20 text-error font-inter text-xs font-semibold border border-error/30 transition-all duration-200 hover:scale-[1.02] active:scale-[0.96] shadow-[0_0_14px_rgba(244,63,94,0.2)]">
+<span class="material-symbols-outlined text-sm leading-none">assignment_add</span>
+<span>Generate Work Order</span>
+</button>
+</div>
+</div>
+<!-- Opportunity 2 (Amber Secondary) -->
+<div class="group relative flex flex-col justify-between p-5 bg-[#10141B] rounded-2xl border-l-[3px] border-l-secondary border-t border-white/[0.18] border-r border-white/[0.06] border-b border-white/[0.06] shadow-[0_20px_40px_-15px_rgba(0,0,0,0.7)] transition-all duration-300 ease-out hover:-translate-y-1 hover:border-r-primary/40 hover:border-t-primary/40 hover:shadow-[0_25px_50px_-12px_rgba(245,158,11,0.2)]">
+<div class="flex flex-col gap-2">
+<div class="flex items-center justify-between gap-2">
+<div class="flex items-center gap-2 min-w-0">
+<span class="font-mono-num text-[11px] text-slate-300 bg-white/[0.08] px-2 py-0.5 rounded font-bold shrink-0">#02</span>
+<span class="font-space text-sm md:text-base font-semibold text-white truncate">Induction Motor 55kW (Stamping Line B): Low Load Factor</span>
+</div>
+<!-- Amber Badge -->
+<span class="shrink-0 font-mono-num text-[10px] px-2.5 py-1 rounded-full bg-secondary/15 text-secondary border border-secondary/30 font-semibold shadow-[0_0_12px_rgba(245,158,11,0.25)]">
+                    VFD Retrofit Recommended
+                  </span>
+</div>
+<!-- Impact Metrics Box -->
+<div class="mt-2 grid grid-cols-2 gap-3 p-3 rounded-xl bg-[#080B0F]/80 border border-white/[0.06] shadow-inner">
+<div>
+<span class="text-[10px] text-slate-400 uppercase tracking-wider block font-inter font-semibold">Mean Load Ratio</span>
+<span class="font-mono-num text-sm md:text-base text-secondary font-bold drop-shadow-[0_0_8px_rgba(245,158,11,0.3)]">34% (Sub-optimal hysteresis)</span>
+</div>
+<div>
+<span class="text-[10px] text-slate-400 uppercase tracking-wider block font-inter font-semibold">Estimated Loss</span>
+<span class="font-mono-num text-sm md:text-base text-secondary font-bold drop-shadow-[0_0_8px_rgba(245,158,11,0.3)]">₹24,800 / month</span>
+</div>
+</div>
+<div class="flex items-center gap-2 text-xs text-slate-300 font-inter mt-1">
+<span class="material-symbols-outlined text-slate-400 text-sm">timelapse</span>
+<span>Payback Period: <strong class="text-white font-medium">3.4 Months via Variable Frequency Drive retrofit</strong></span>
+</div>
+</div>
+<div class="mt-4 pt-3 border-t border-white/[0.08] flex items-center justify-between">
+<span class="font-mono-num text-xs text-slate-400">Telemetry: 18.4 kWh/operating hr</span>
+<button class="action-btn flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-secondary/10 hover:bg-secondary/20 text-secondary font-inter text-xs font-semibold border border-secondary/30 transition-all duration-200 hover:scale-[1.02] active:scale-[0.96] shadow-[0_0_14px_rgba(245,158,11,0.2)]">
+<span class="material-symbols-outlined text-sm leading-none">precision_manufacturing</span>
+<span>View Engineering Feasibility</span>
+</button>
+</div>
+</div>
+<!-- Opportunity 3 (Emerald Primary) -->
+<div class="group relative flex flex-col justify-between p-5 bg-[#10141B] rounded-2xl border-l-[3px] border-l-primary border-t border-white/[0.18] border-r border-white/[0.06] border-b border-white/[0.06] shadow-[0_20px_40px_-15px_rgba(0,0,0,0.7)] transition-all duration-300 ease-out hover:-translate-y-1 hover:border-r-primary hover:border-t-primary/50 hover:shadow-[0_25px_50px_-12px_rgba(45,212,191,0.25)]">
+<div class="flex flex-col gap-2">
+<div class="flex items-center justify-between gap-2">
+<div class="flex items-center gap-2 min-w-0">
+<span class="font-mono-num text-[11px] text-slate-300 bg-white/[0.08] px-2 py-0.5 rounded font-bold shrink-0">#03</span>
+<span class="font-space text-sm md:text-base font-semibold text-white truncate">Machine Shop Air Ring: Line Over-Pressurization</span>
+</div>
+<!-- Teal Badge -->
+<span class="shrink-0 font-mono-num text-[10px] px-2.5 py-1 rounded-full bg-primary/15 text-primary border border-primary/30 font-semibold shadow-[0_0_12px_rgba(45,212,191,0.25)]">
+                    Set-Point Optimization
+                  </span>
+</div>
+<!-- Impact Metrics Box -->
+<div class="mt-2 grid grid-cols-2 gap-3 p-3 rounded-xl bg-[#080B0F]/80 border border-white/[0.06] shadow-inner">
+<div>
+<span class="text-[10px] text-slate-400 uppercase tracking-wider block font-inter font-semibold">Pressure Deviation</span>
+<span class="font-mono-num text-sm md:text-base text-primary font-bold drop-shadow-[0_0_8px_rgba(45,212,191,0.3)]">7.4 bar vs 6.2 bar spec</span>
+</div>
+<div>
+<span class="text-[10px] text-slate-400 uppercase tracking-wider block font-inter font-semibold">Estimated Loss</span>
+<span class="font-mono-num text-sm md:text-base text-primary font-bold drop-shadow-[0_0_8px_rgba(45,212,191,0.3)]">₹18,500 / month</span>
+</div>
+</div>
+<div class="flex items-center gap-2 text-xs text-slate-300 font-inter mt-1">
+<span class="material-symbols-outlined text-slate-400 text-sm">tune</span>
+<span>Payback Period: <strong class="text-white font-medium">Immediate (Regulator recalibration &amp; PLC trim)</strong></span>
+</div>
+</div>
+<div class="mt-4 pt-3 border-t border-white/[0.08] flex items-center justify-between">
+<span class="font-mono-num text-xs text-slate-400">Excess Load: +7.2% specific kWh</span>
+<button class="action-btn flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-primary text-on-primary hover:bg-emerald-300 font-inter text-xs font-semibold transition-all duration-200 hover:scale-[1.02] active:scale-[0.96] shadow-[0_0_18px_rgba(45,212,191,0.35)]">
+<span class="material-symbols-outlined text-sm leading-none">tune</span>
+<span>Optimize Set-Point</span>
+</button>
+</div>
+</div>
+<!-- Opportunity 4 (Slate Outline) -->
+<div class="group relative flex flex-col justify-between p-5 bg-[#10141B] rounded-2xl border-l-[3px] border-l-slate-400 border-t border-white/[0.18] border-r border-white/[0.06] border-b border-white/[0.06] shadow-[0_20px_40px_-15px_rgba(0,0,0,0.7)] transition-all duration-300 ease-out hover:-translate-y-1 hover:border-r-primary/40 hover:border-t-primary/40 hover:shadow-[0_25px_50px_-12px_rgba(0,0,0,0.8)]">
+<div class="flex flex-col gap-2">
+<div class="flex items-center justify-between gap-2">
+<div class="flex items-center gap-2 min-w-0">
+<span class="font-mono-num text-[11px] text-slate-300 bg-white/[0.08] px-2 py-0.5 rounded font-bold shrink-0">#04</span>
+<span class="font-space text-sm md:text-base font-semibold text-white truncate">Cooling Tower Pump 03: Throttling Valve Loss</span>
+</div>
+<!-- Slate Badge -->
+<span class="shrink-0 font-mono-num text-[10px] px-2.5 py-1 rounded-full bg-slate-700/30 text-slate-300 border border-slate-500/40 font-semibold">
+                    Hydraulic Balancing
+                  </span>
+</div>
+<!-- Impact Metrics Box -->
+<div class="mt-2 grid grid-cols-2 gap-3 p-3 rounded-xl bg-[#080B0F]/80 border border-white/[0.06] shadow-inner">
+<div>
+<span class="text-[10px] text-slate-400 uppercase tracking-wider block font-inter font-semibold">Dynamic Head Loss</span>
+<span class="font-mono-num text-sm md:text-base text-slate-200 font-bold">8.1 kW mechanical drag</span>
+</div>
+<div>
+<span class="text-[10px] text-slate-400 uppercase tracking-wider block font-inter font-semibold">Estimated Loss</span>
+<span class="font-mono-num text-sm md:text-base text-slate-200 font-bold">₹11,200 / month</span>
+</div>
+</div>
+<div class="flex items-center gap-2 text-xs text-slate-300 font-inter mt-1">
+<span class="material-symbols-outlined text-slate-400 text-sm">build</span>
+<span>Payback Period: <strong class="text-white font-medium">1.2 Months (Impeller trim or secondary loop bypass)</strong></span>
+</div>
+</div>
+<div class="mt-4 pt-3 border-t border-white/[0.08] flex items-center justify-between">
+<span class="font-mono-num text-xs text-slate-400">Sensor: DP-CW-03 (0.92 bar ΔP)</span>
+<button class="action-btn flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/[0.06] hover:bg-white/[0.12] text-white font-inter text-xs font-semibold border border-white/[0.1] transition-all duration-200 hover:scale-[1.02] active:scale-[0.96] shadow-[0_0_12px_rgba(255,255,255,0.05)]">
+<span class="material-symbols-outlined text-sm leading-none">calendar_month</span>
+<span>Schedule Inspection</span>
+</button>
+</div>
+</div>
+</div>
+</section>
+<!-- Audit Metadata Verification Footer -->
+<footer class="animate-fade-lift delay-4 mt-2 p-4 rounded-xl bg-[#0A0D12]/90 border border-white/[0.06] shadow-[0_4px_16px_rgba(0,0,0,0.5)] flex flex-col md:flex-row items-center justify-between gap-3 font-mono-num text-xs text-slate-400">
+<div class="flex flex-wrap items-center gap-3">
+<span>Checksum: <strong class="text-slate-300 font-semibold">SHA256:d89e7c10b45ff03</strong></span>
+<span class="text-white/20">•</span>
+<span>BEE Certified Auditor: #EA-10492</span>
+<span class="text-white/20">•</span>
+<span>Grid Tariff: ₹8.89/kWh (Time-of-Day Base)</span>
+</div>
+<div class="flex items-center gap-2 text-primary font-medium">
+<span class="inline-block w-2 h-2 rounded-full bg-primary animate-pulse shadow-[0_0_8px_rgba(45,212,191,0.8)]"></span>
+<span>Report Synchronized with Maharashtra State Load Despatch Center (SLDC)</span>
+</div>
+</footer>
+</div>
+</main>
+</div>
+<!-- Interactive Scripts: CountUp Numbers, Dynamic Tooltip, Button Ripple & Download State -->
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+      // 1. Number Count-up Animation
+      const animateCount = (el, target, isCurrency, decimals) => {
+        let start = 0;
+        const duration = 1400;
+        const startTime = performance.now();
+
+        const update = (now) => {
+          const elapsed = now - startTime;
+          const progress = Math.min(elapsed / duration, 1);
+          // Ease-out cubic
+          const easeOut = 1 - Math.pow(1 - progress, 3);
+          const current = start + (target - start) * easeOut;
+
+          if (isCurrency) {
+            el.textContent = '₹' + Math.floor(current).toLocaleString('en-IN');
+          } else if (decimals > 0) {
+            el.textContent = current.toFixed(decimals);
+          } else {
+            el.textContent = Math.floor(current).toLocaleString('en-IN');
+          }
+
+          if (progress < 1) {
+            requestAnimationFrame(update);
+          } else {
+            if (isCurrency) el.textContent = '₹' + target.toLocaleString('en-IN');
+            else if (decimals > 0) el.textContent = target.toFixed(decimals);
+            else el.textContent = target.toLocaleString('en-IN');
+          }
+        };
+        requestAnimationFrame(update);
+      };
+
+      const savEl = document.getElementById('metricSavings');
+      const nrgEl = document.getElementById('metricEnergy');
+      const carEl = document.getElementById('metricCarbon');
+      const spcEl = document.getElementById('metricSpc');
+
+      if (savEl) animateCount(savEl, 482350, true, 0);
+      if (nrgEl) animateCount(nrgEl, 54280, false, 0);
+      if (carEl) animateCount(carEl, 44.5, false, 1);
+      if (spcEl) animateCount(spcEl, 0.112, false, 3);
+
+      // 2. Chart Interactive Tooltip
+      const chartContainer = document.getElementById('chartContainer');
+      const tooltip = document.getElementById('chartTooltip');
+      const ttMonth = document.getElementById('ttMonth');
+      const ttDelta = document.getElementById('ttDelta');
+      const ttSavings = document.getElementById('ttSavings');
+      const monthCols = document.querySelectorAll('.month-col');
+
+      monthCols.forEach(col => {
+        col.addEventListener('mouseenter', (e) => {
+          const month = col.getAttribute('data-month');
+          const delta = col.getAttribute('data-delta');
+          const savings = col.getAttribute('data-savings');
+          const x = parseFloat(col.getAttribute('data-x'));
+          const y = parseFloat(col.getAttribute('data-y'));
+
+          ttMonth.textContent = month;
+          ttDelta.textContent = delta;
+          ttSavings.textContent = savings;
+
+          const rect = chartContainer.getBoundingClientRect();
+          const posX = (x / 1100) * rect.width;
+          const posY = (y / 320) * rect.height;
+
+          tooltip.style.left = `${Math.min(Math.max(posX - 70, 10), rect.width - 150)}px`;
+          tooltip.style.top = `${Math.max(posY - 60, 10)}px`;
+          tooltip.style.opacity = '1';
+          tooltip.style.transform = 'translateY(-4px)';
+        });
+
+        col.addEventListener('mouseleave', () => {
+          tooltip.style.opacity = '0';
+          tooltip.style.transform = 'translateY(0)';
+        });
+      });
+
+      // 3. Export Audit Report Interactive Trigger
+      const exportBtn = document.getElementById('exportBtn');
+      const exportIcon = document.getElementById('exportIcon');
+      const exportText = document.getElementById('exportText');
+
+      if (exportBtn) {
+        exportBtn.addEventListener('click', function() {
+          exportIcon.textContent = 'autorenew';
+          exportIcon.classList.add('animate-spin');
+          exportText.textContent = 'Compiling ISO 50001 Package...';
+          exportBtn.classList.add('opacity-90');
+
+          setTimeout(() => {
+            exportIcon.textContent = 'check_circle';
+            exportIcon.classList.remove('animate-spin');
+            exportText.textContent = 'Audit Package Ready & Downloaded!';
+            exportBtn.classList.remove('from-primary', 'to-emerald-400');
+            exportBtn.classList.add('from-emerald-400', 'to-teal-300');
+
+            setTimeout(() => {
+              exportIcon.textContent = 'picture_as_pdf';
+              exportText.textContent = 'Export Audit Report (PDF / ISO 50001)';
+              exportBtn.classList.remove('from-emerald-400', 'to-teal-300', 'opacity-90');
+              exportBtn.classList.add('from-primary', 'to-emerald-400');
+            }, 2500);
+          }, 1100);
+        });
+      }
+    });
+  </script>
+</body></html>
